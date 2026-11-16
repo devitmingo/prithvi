@@ -187,15 +187,6 @@
                                 </span>
                             </a>
                         @endforeach
-
-                        <!-- Quick Add Lead Link -->
-                        <div class="pt-1.5">
-                            <a href="{{ route('admin.leads.create') }}" 
-                               class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors">
-                                <i class="fa-solid fa-plus text-[10px]"></i>
-                                <span>Add New Lead</span>
-                            </a>
-                        </div>
                     </div>
                 </div>
 
