@@ -97,47 +97,47 @@
 
         <!-- Sidebar Navigation -->
         <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-               class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 text-slate-300 transition-transform duration-300 ease-in-out flex flex-col border-r border-slate-800 lg:static lg:h-screen lg:sticky lg:top-0">
+               class="fixed inset-y-0 left-0 z-50 w-72 bg-white text-slate-700 transition-transform duration-300 ease-in-out flex flex-col border-r border-slate-200/90 shadow-sm lg:static lg:h-screen lg:sticky lg:top-0">
             
             <!-- Logo & Brand Header -->
-            <div class="h-20 flex items-center justify-between px-5 bg-slate-950/80 border-b border-slate-800/80">
+            <div class="h-20 flex items-center justify-between px-5 bg-white border-b border-slate-100">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 group">
-                    <div class="w-11 h-11 rounded-2xl bg-white p-1 flex items-center justify-center shadow-lg shadow-emerald-950/40 group-hover:scale-105 transition-all overflow-hidden border border-amber-400/50 shrink-0">
+                    <div class="w-11 h-11 rounded-2xl bg-slate-50 p-1 flex items-center justify-center shadow-xs group-hover:scale-105 transition-all overflow-hidden border border-slate-200 shrink-0">
                         <img src="{{ asset('images/prithvi-logo.png') }}" alt="Prithvi Buildcon" class="w-full h-full object-contain">
                     </div>
                     <div>
-                        <span class="text-base font-extrabold text-white tracking-tight flex items-center gap-1.5 leading-snug">
-                            PRITHVI <span class="text-[10px] px-1.5 py-0.5 rounded bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black shadow-xs">BUILDCON</span>
+                        <span class="text-base font-extrabold text-slate-900 tracking-tight flex items-center gap-1.5 leading-snug">
+                            PRITHVI <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 font-black shadow-xs">BUILDCON</span>
                         </span>
-                        <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5 flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> CRM & Real Estate Portal
+                        <p class="text-[10px] text-emerald-700 font-bold uppercase tracking-wider mt-0.5 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span> CRM & Real Estate Portal
                         </p>
                     </div>
                 </a>
-                <button @click="sidebarOpen = false" class="lg:hidden text-slate-400 hover:text-white p-1">
+                <button @click="sidebarOpen = false" class="lg:hidden text-slate-400 hover:text-slate-700 p-1">
                     <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
             </div>
 
             <!-- Active User Brief Card -->
-            <div class="px-5 py-4 border-b border-slate-800/60 bg-slate-950/30">
+            <div class="px-5 py-3.5 border-b border-slate-100 bg-slate-50/70">
                 <div class="flex items-center gap-3">
                     @if(Auth::user()->profile_photo)
-                        <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="w-10 h-10 rounded-full object-cover border-2 border-brand-500/50 shadow">
+                        <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="w-10 h-10 rounded-full object-cover border-2 border-brand-500/40 shadow-xs">
                     @else
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 flex items-center justify-center text-white font-bold text-sm shadow">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-700 border border-slate-300 flex items-center justify-center font-bold text-sm shadow-xs">
                             {{ substr(Auth::user()->name, 0, 2) }}
                         </div>
                     @endif
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-semibold text-white truncate">{{ Auth::user()->name }}</p>
+                        <p class="text-sm font-bold text-slate-900 truncate">{{ Auth::user()->name }}</p>
                         <div class="flex items-center gap-1.5 mt-0.5">
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold tracking-wide uppercase {{ Auth::user()->isSuperAdmin() ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' }}">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold tracking-wide uppercase {{ Auth::user()->isSuperAdmin() ? 'bg-amber-100 text-amber-800 border border-amber-300/80' : 'bg-emerald-100 text-emerald-800 border border-emerald-200' }}">
                                 <i class="fa-solid {{ Auth::user()->isSuperAdmin() ? 'fa-crown text-[9px]' : (Auth::user()->isAgent() ? 'fa-user-tie text-[9px]' : 'fa-users text-[9px]') }}"></i>
                                 {{ Auth::user()->role_display_name }}
                             </span>
                             @if(Auth::user()->company_name)
-                                <span class="text-[11px] text-slate-400 truncate max-w-[90px]" title="{{ Auth::user()->company_name }}">
+                                <span class="text-[11px] text-slate-500 truncate max-w-[90px]" title="{{ Auth::user()->company_name }}">
                                     • {{ Auth::user()->company_name }}
                                 </span>
                             @endif
@@ -153,7 +153,7 @@
 
                 <!-- Dashboard -->
                 <a href="{{ route('admin.dashboard') }}" 
-                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('admin.dashboard') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.dashboard') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                     <i class="fa-solid fa-chart-pie w-5 text-center text-base {{ request()->routeIs('admin.dashboard') ? 'text-white' : 'text-slate-400' }}"></i>
                     <span>Dashboard</span>
                 </a>
@@ -167,26 +167,26 @@
                 @endphp
                 <div x-data="{ leadsOpen: {{ $isLeadsActive ? 'true' : 'false' }} }">
                     <button @click="leadsOpen = !leadsOpen" 
-                            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ $isLeadsActive ? 'bg-slate-800 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ $isLeadsActive ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                         <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-users-line w-5 text-center text-base {{ $isLeadsActive ? 'text-brand-400' : 'text-slate-400' }}"></i>
+                            <i class="fa-solid fa-users-line w-5 text-center text-base {{ $isLeadsActive ? 'text-brand-600' : 'text-slate-400' }}"></i>
                             <span>Leads & CRM</span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $isLeadsActive ? 'bg-brand-500/20 text-brand-300' : 'bg-slate-800 text-slate-400' }}">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $isLeadsActive ? 'bg-brand-100 text-brand-700' : 'bg-slate-100 text-slate-600' }}">
                                 {{ $totalAllContacts }}
                             </span>
-                            <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200" :class="leadsOpen ? 'rotate-180' : ''"></i>
+                            <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 text-slate-400" :class="leadsOpen ? 'rotate-180' : ''"></i>
                         </div>
                     </button>
                     <div x-show="leadsOpen" x-cloak class="mt-1 pl-7 pr-2 space-y-1">
                         <!-- All Leads Pipeline -->
                         <a href="{{ route('admin.leads.index') }}" 
-                           class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.leads.index') && !request('project_id') ? 'text-brand-400 bg-brand-500/10 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-800/40' }}">
+                           class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors {{ request()->routeIs('admin.leads.index') && !request('project_id') ? 'text-brand-700 bg-brand-50 border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             <span class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-layer-group text-[10px]"></i> All Inquiries
+                                <i class="fa-solid fa-layer-group text-[10px] text-slate-400"></i> All Inquiries
                             </span>
-                            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-400">
+                            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-600 font-medium">
                                 {{ $totalAllContacts }}
                             </span>
                         </a>
@@ -203,13 +203,13 @@
                                 $isThisProj = request()->routeIs('admin.leads.index') && (string)$currentProjId === (string)$sp->id;
                             @endphp
                             <a href="{{ route('admin.leads.index', ['project_id' => $sp->id]) }}" 
-                               class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium transition-colors {{ $isThisProj ? 'text-brand-300 bg-brand-500/20 font-bold border-l-2 border-brand-400 pl-2.5' : 'text-slate-300 hover:text-white hover:bg-slate-800/40' }}"
+                               class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium transition-colors {{ $isThisProj ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5 shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}"
                                title="{{ $sp->name }} ({{ $sp->contacts_count }} leads)">
                                 <span class="truncate max-w-[130px] flex items-center gap-1.5">
-                                    <i class="fa-solid fa-building text-[10px] {{ $isThisProj ? 'text-brand-400' : 'text-slate-400' }}"></i>
+                                    <i class="fa-solid fa-building text-[10px] {{ $isThisProj ? 'text-brand-600' : 'text-slate-400' }}"></i>
                                     {{ $sp->name }}
                                 </span>
-                                <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded-full {{ $sp->contacts_count > 0 ? ($isThisProj ? 'bg-brand-500 text-white' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30') : 'bg-slate-800/70 text-slate-400' }}">
+                                <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded-full {{ $sp->contacts_count > 0 ? ($isThisProj ? 'bg-brand-600 text-white' : 'bg-emerald-50 text-emerald-700 border border-emerald-200') : 'bg-slate-100 text-slate-400' }}">
                                     {{ $sp->contacts_count }}
                                 </span>
                             </a>
@@ -218,7 +218,7 @@
                         <!-- Quick Add Lead Link -->
                         <div class="pt-1.5">
                             <a href="{{ route('admin.leads.create') }}" 
-                               class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-colors">
+                               class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors">
                                 <i class="fa-solid fa-plus text-[10px]"></i>
                                 <span>Add New Lead</span>
                             </a>
@@ -229,47 +229,47 @@
                 <!-- Projects & Inventory -->
                 <div x-data="{ projOpen: {{ request()->routeIs('admin.projects.*') ? 'true' : 'false' }} }">
                     <button @click="projOpen = !projOpen" 
-                            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('admin.projects.*') ? 'bg-slate-800 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.projects.*') ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                         <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-city w-5 text-center text-base {{ request()->routeIs('admin.projects.*') ? 'text-brand-400' : 'text-slate-400' }}"></i>
+                            <i class="fa-solid fa-city w-5 text-center text-base {{ request()->routeIs('admin.projects.*') ? 'text-brand-600' : 'text-slate-400' }}"></i>
                             <span>Projects & Inventory</span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ request()->routeIs('admin.projects.*') ? 'bg-brand-500/20 text-brand-300' : 'bg-slate-800 text-slate-400' }}">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ request()->routeIs('admin.projects.*') ? 'bg-brand-100 text-brand-700' : 'bg-slate-100 text-slate-600' }}">
                                 {{ \App\Models\Project::count() }}
                             </span>
-                            <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200" :class="projOpen ? 'rotate-180' : ''"></i>
+                            <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 text-slate-400" :class="projOpen ? 'rotate-180' : ''"></i>
                         </div>
                     </button>
                     <div x-show="projOpen" x-cloak class="mt-1 pl-9 pr-2 space-y-1">
                         <a href="{{ route('admin.projects.index') }}" 
-                           class="block px-3 py-1.5 rounded-lg text-xs font-medium {{ request()->routeIs('admin.projects.index') ? 'text-brand-400 bg-brand-500/10 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-800/40' }}">
+                           class="block px-3 py-1.5 rounded-lg text-xs font-medium {{ request()->routeIs('admin.projects.index') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • All Projects List
                         </a>
                         <a href="{{ route('admin.projects.create') }}" 
-                           class="block px-3 py-1.5 rounded-lg text-xs font-medium {{ request()->routeIs('admin.projects.create') ? 'text-brand-400 bg-brand-500/10 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-800/40' }}">
+                           class="block px-3 py-1.5 rounded-lg text-xs font-medium {{ request()->routeIs('admin.projects.create') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • + Add New Project
                         </a>
                         <a href="{{ route('admin.projects.maps') }}" 
-                           class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-bold {{ request()->routeIs('admin.projects.maps') ? 'text-emerald-300 bg-emerald-500/20 border border-emerald-500/30' : 'text-emerald-400 hover:text-white hover:bg-slate-800/40' }}">
+                           class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-bold {{ request()->routeIs('admin.projects.maps') ? 'text-emerald-800 bg-emerald-100 border border-emerald-300' : 'text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50' }}">
                             <span class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-map-location-dot text-emerald-400 text-[11px]"></i> Project Map Updates
+                                <i class="fa-solid fa-map-location-dot text-emerald-600 text-[11px]"></i> Project Map Updates
                             </span>
-                            <span class="text-[9px] px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase font-black">Shortcut</span>
+                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 uppercase font-black">Shortcut</span>
                         </a>
                     </div>
                 </div>
 
                 <!-- Users / Staff Management -->
                 <a href="{{ route('admin.users.index') }}" 
-                   class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('admin.users.*') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                   class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.users.*') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                     <div class="flex items-center gap-3">
                         <i class="fa-solid fa-id-card-clip w-5 text-center text-base {{ request()->routeIs('admin.users.*') ? 'text-white' : 'text-slate-400' }}"></i>
                         <span>User Management</span>
                     </div>
                     @php $pendingCnt = \App\Models\User::where('status', 0)->count(); @endphp
                     @if($pendingCnt > 0)
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-white shadow">
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500 text-white shadow-xs">
                             {{ $pendingCnt }} New
                         </span>
                     @endif
@@ -277,7 +277,7 @@
 
                 <!-- Call History & Site Visits -->
                 <a href="{{ route('admin.call-histories.index') }}" 
-                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('admin.call-histories.*') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.call-histories.*') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                     <i class="fa-solid fa-phone-volume w-5 text-center text-base {{ request()->routeIs('admin.call-histories.*') ? 'text-white' : 'text-slate-400' }}"></i>
                     <span>Call History & Visits</span>
                 </a>
@@ -285,28 +285,28 @@
                 <!-- Attendance & Salary Management -->
                 <div x-data="{ attOpen: {{ request()->routeIs('admin.attendances.*') || request()->routeIs('admin.salary.*') ? 'true' : 'false' }} }">
                     <button @click="attOpen = !attOpen" 
-                            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('admin.attendances.*') || request()->routeIs('admin.salary.*') ? 'bg-slate-800 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.attendances.*') || request()->routeIs('admin.salary.*') ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                         <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-clock-rotate-left w-5 text-center text-base {{ request()->routeIs('admin.attendances.*') || request()->routeIs('admin.salary.*') ? 'text-brand-400' : 'text-slate-400' }}"></i>
+                            <i class="fa-solid fa-clock-rotate-left w-5 text-center text-base {{ request()->routeIs('admin.attendances.*') || request()->routeIs('admin.salary.*') ? 'text-brand-600' : 'text-slate-400' }}"></i>
                             <span>Attendance & Salary</span>
                         </div>
-                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200" :class="attOpen ? 'rotate-180' : ''"></i>
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 text-slate-400" :class="attOpen ? 'rotate-180' : ''"></i>
                     </button>
                     <div x-show="attOpen" x-cloak class="mt-1 pl-9 pr-2 space-y-1">
                         <a href="{{ route('admin.attendances.index') }}" 
-                           class="block px-3 py-1.5 rounded-lg text-xs font-medium {{ request()->routeIs('admin.attendances.index') ? 'text-brand-400 bg-brand-500/10 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-800/40' }}">
+                           class="block px-3 py-1.5 rounded-lg text-xs font-medium {{ request()->routeIs('admin.attendances.index') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • Daily Punch Logs
                         </a>
                         <a href="{{ route('admin.attendances.monthly') }}" 
-                           class="block px-3 py-1.5 rounded-lg text-xs font-medium {{ request()->routeIs('admin.attendances.monthly') ? 'text-brand-400 bg-brand-500/10 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-800/40' }}">
+                           class="block px-3 py-1.5 rounded-lg text-xs font-medium {{ request()->routeIs('admin.attendances.monthly') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • Monthly Summary Sheet
                         </a>
                         <a href="{{ route('admin.salary.index') }}" 
-                           class="block px-3 py-1.5 rounded-lg text-xs font-medium {{ request()->routeIs('admin.salary.*') ? 'text-emerald-400 bg-emerald-500/10 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-800/40' }}">
+                           class="block px-3 py-1.5 rounded-lg text-xs font-medium {{ request()->routeIs('admin.salary.*') ? 'text-emerald-700 bg-emerald-50 font-bold border-l-2 border-emerald-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • Salary & Payroll Sheet
                         </a>
                         <a href="{{ route('admin.attendances.create') }}" 
-                           class="block px-3 py-1.5 rounded-lg text-xs font-medium {{ request()->routeIs('admin.attendances.create') ? 'text-brand-400 bg-brand-500/10 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-800/40' }}">
+                           class="block px-3 py-1.5 rounded-lg text-xs font-medium {{ request()->routeIs('admin.attendances.create') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • Manual Entry
                         </a>
                     </div>
@@ -314,7 +314,7 @@
 
                 <!-- Offers & Promotions -->
                 <a href="{{ route('admin.offers.index') }}" 
-                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('admin.offers.*') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                   class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.offers.*') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                     <i class="fa-solid fa-tags w-5 text-center text-base {{ request()->routeIs('admin.offers.*') ? 'text-white' : 'text-slate-400' }}"></i>
                     <span>Offers & Deals</span>
                 </a>
@@ -323,33 +323,33 @@
                 <div x-data="{ repOpen: {{ request()->routeIs('admin.reports.*') ? 'true' : 'false' }} }" class="pt-2">
                     <p class="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Analytics & Reports</p>
                     <button @click="repOpen = !repOpen" 
-                            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('admin.reports.*') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.reports.*') ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                         <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-chart-line w-5 text-center text-base {{ request()->routeIs('admin.reports.*') ? 'text-white' : 'text-slate-400' }}"></i>
+                            <i class="fa-solid fa-chart-line w-5 text-center text-base {{ request()->routeIs('admin.reports.*') ? 'text-brand-600' : 'text-slate-400' }}"></i>
                             <span>Reports Hub</span>
                         </div>
-                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200" :class="repOpen ? 'rotate-180' : ''"></i>
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 text-slate-400" :class="repOpen ? 'rotate-180' : ''"></i>
                     </button>
                     <div x-show="repOpen" x-cloak class="mt-1 pl-9 pr-2 space-y-1">
-                        <a href="{{ route('admin.reports.index') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.index') ? 'text-brand-400 bg-brand-500/10 font-bold' : 'text-slate-400 hover:text-white' }}">
+                        <a href="{{ route('admin.reports.index') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.index') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • Reports Overview
                         </a>
-                        <a href="{{ route('admin.reports.leads') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.leads') ? 'text-brand-400 bg-brand-500/10 font-bold' : 'text-slate-400 hover:text-white' }}">
+                        <a href="{{ route('admin.reports.leads') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.leads') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • Leads & Pipeline Funnel
                         </a>
-                        <a href="{{ route('admin.reports.agent-performance') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.agent-performance') ? 'text-brand-400 bg-brand-500/10 font-bold' : 'text-slate-400 hover:text-white' }}">
+                        <a href="{{ route('admin.reports.agent-performance') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.agent-performance') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • Agent & Staff Performance
                         </a>
-                        <a href="{{ route('admin.reports.attendance') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.attendance') ? 'text-brand-400 bg-brand-500/10 font-bold' : 'text-slate-400 hover:text-white' }}">
+                        <a href="{{ route('admin.reports.attendance') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.attendance') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • Attendance & Punctuality
                         </a>
-                        <a href="{{ route('admin.reports.site-visits') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.site-visits') ? 'text-brand-400 bg-brand-500/10 font-bold' : 'text-slate-400 hover:text-white' }}">
+                        <a href="{{ route('admin.reports.site-visits') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.site-visits') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • Verified Site Visits
                         </a>
-                        <a href="{{ route('admin.reports.projects') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.projects') ? 'text-brand-400 bg-brand-500/10 font-bold' : 'text-slate-400 hover:text-white' }}">
+                        <a href="{{ route('admin.reports.projects') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.projects') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • Project Demand & Sales
                         </a>
-                        <a href="{{ route('admin.reports.user-growth') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.user-growth') ? 'text-brand-400 bg-brand-500/10 font-bold' : 'text-slate-400 hover:text-white' }}">
+                        <a href="{{ route('admin.reports.user-growth') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.user-growth') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • User Growth & Demographics
                         </a>
                     </div>
@@ -358,7 +358,7 @@
                 @if(Auth::user()->isSuperAdmin())
                     <!-- Super Admin Control Center -->
                     <div class="pt-4 pb-2">
-                        <p class="px-3 text-[11px] font-bold text-amber-400/90 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <p class="px-3 text-[11px] font-bold text-amber-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                             <i class="fa-solid fa-crown text-[10px]"></i>
                             <span>Super Admin Only</span>
                         </p>
@@ -366,24 +366,24 @@
                         <!-- Masters Dropdown -->
                         <div x-data="{ masterOpen: {{ request()->routeIs('admin.masters.*') ? 'true' : 'false' }} }" class="space-y-1">
                             <button @click="masterOpen = !masterOpen" 
-                                    class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('admin.masters.*') ? 'bg-slate-800 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                                    class="w-full flex items-center justify-between px-3.5 py-2 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.masters.*') ? 'bg-amber-50 text-amber-900 border border-amber-200' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                                 <div class="flex items-center gap-3">
-                                    <i class="fa-solid fa-database w-5 text-center text-base {{ request()->routeIs('admin.masters.*') ? 'text-amber-400' : 'text-slate-400' }}"></i>
+                                    <i class="fa-solid fa-database w-5 text-center text-base {{ request()->routeIs('admin.masters.*') ? 'text-amber-600' : 'text-slate-400' }}"></i>
                                     <span>Master Records</span>
                                 </div>
-                                <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200" :class="masterOpen ? 'rotate-180' : ''"></i>
+                                <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 text-slate-400" :class="masterOpen ? 'rotate-180' : ''"></i>
                             </button>
                             <div x-show="masterOpen" x-cloak class="mt-1 pl-9 pr-2 space-y-1">
-                                <a href="{{ route('admin.masters.states.index') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.masters.states.*') ? 'text-amber-300 bg-amber-500/10 font-bold' : 'text-slate-400 hover:text-white' }}">
+                                <a href="{{ route('admin.masters.states.index') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.masters.states.*') ? 'text-amber-800 bg-amber-100/70 font-bold border-l-2 border-amber-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                                     • States Master
                                 </a>
-                                <a href="{{ route('admin.masters.cities.index') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.masters.cities.*') ? 'text-amber-300 bg-amber-500/10 font-bold' : 'text-slate-400 hover:text-white' }}">
+                                <a href="{{ route('admin.masters.cities.index') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.masters.cities.*') ? 'text-amber-800 bg-amber-100/70 font-bold border-l-2 border-amber-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                                     • Cities Master
                                 </a>
-                                <a href="{{ route('admin.masters.designations.index') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.masters.designations.*') ? 'text-amber-300 bg-amber-500/10 font-bold' : 'text-slate-400 hover:text-white' }}">
+                                <a href="{{ route('admin.masters.designations.index') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.masters.designations.*') ? 'text-amber-800 bg-amber-100/70 font-bold border-l-2 border-amber-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                                     • Designations Master
                                 </a>
-                                <a href="{{ route('admin.masters.holidays.index') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.masters.holidays.*') ? 'text-amber-300 bg-amber-500/10 font-bold' : 'text-slate-400 hover:text-white' }}">
+                                <a href="{{ route('admin.masters.holidays.index') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.masters.holidays.*') ? 'text-amber-800 bg-amber-100/70 font-bold border-l-2 border-amber-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                                     • Holidays Master
                                 </a>
                             </div>
@@ -392,13 +392,13 @@
                         <!-- Forgot Password Requests -->
                         @php $pwdReqCount = \App\Models\UserForgotPassword::where('status', 1)->count(); @endphp
                         <a href="{{ route('admin.forgot-passwords.index') }}" 
-                           class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('admin.forgot-passwords.*') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                           class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.forgot-passwords.*') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                             <div class="flex items-center gap-3">
                                 <i class="fa-solid fa-key w-5 text-center text-base {{ request()->routeIs('admin.forgot-passwords.*') ? 'text-white' : 'text-slate-400' }}"></i>
                                 <span>Password Requests</span>
                             </div>
                             @if($pwdReqCount > 0)
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500 text-white animate-pulse">
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500 text-white shadow-xs animate-pulse">
                                     {{ $pwdReqCount }}
                                 </span>
                             @endif
@@ -406,14 +406,14 @@
 
                         <!-- App Settings -->
                         <a href="{{ route('admin.settings.index') }}" 
-                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('admin.settings.*') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.settings.*') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                             <i class="fa-solid fa-sliders w-5 text-center text-base {{ request()->routeIs('admin.settings.*') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>App Settings & CMS</span>
                         </a>
 
                         <!-- FAQs -->
                         <a href="{{ route('admin.faqs.index') }}" 
-                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('admin.faqs.*') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.faqs.*') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                             <i class="fa-solid fa-circle-question w-5 text-center text-base {{ request()->routeIs('admin.faqs.*') ? 'text-white' : 'text-slate-400' }}"></i>
                             <span>FAQs Manager</span>
                         </a>
@@ -422,13 +422,13 @@
             </nav>
 
             <!-- Sidebar Footer & Logout -->
-            <div class="p-4 border-t border-slate-800/80 bg-slate-950/40">
+            <div class="p-4 border-t border-slate-100 bg-slate-50/70">
                 <div class="flex items-center justify-between">
-                    <a href="{{ route('admin.profile') }}" class="text-xs text-slate-400 hover:text-white flex items-center gap-2">
-                        <i class="fa-solid fa-gear"></i>
+                    <a href="{{ route('admin.profile') }}" class="text-xs text-slate-600 hover:text-slate-900 flex items-center gap-2 font-medium">
+                        <i class="fa-solid fa-gear text-slate-400"></i>
                         <span>Account Settings</span>
                     </a>
-                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();" class="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1.5 font-semibold">
+                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();" class="text-xs text-rose-600 hover:text-rose-700 flex items-center gap-1.5 font-bold">
                         <i class="fa-solid fa-arrow-right-from-bracket"></i>
                         <span>Logout</span>
                     </a>

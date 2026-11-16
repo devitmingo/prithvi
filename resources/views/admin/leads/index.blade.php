@@ -9,26 +9,26 @@
 
     <!-- Active Project Specific Filter Header Banner -->
     @if(request('project_id') && ($activeProj = $projects->first(fn($p) => $p->id == request('project_id'))))
-        <div class="p-4 bg-gradient-to-r from-blue-900 to-indigo-900 text-white rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md border border-blue-700/50">
+        <div class="p-4 bg-gradient-to-r from-blue-50/80 via-indigo-50/40 to-white text-slate-800 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs border border-blue-200/80">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-blue-500/30 border border-blue-400/40 text-blue-200 flex items-center justify-center text-lg shrink-0">
+                <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 border border-blue-200 flex items-center justify-center text-lg shrink-0 shadow-2xs">
                     <i class="fa-solid fa-city"></i>
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="text-sm font-extrabold tracking-tight">{{ $activeProj->name }}</span>
-                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-md bg-emerald-500 text-white shadow-xs">Project Pipeline</span>
+                        <span class="text-sm font-extrabold text-slate-900 tracking-tight">{{ $activeProj->name }}</span>
+                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-md bg-brand-600 text-white shadow-2xs">Project Pipeline</span>
                     </div>
-                    <p class="text-xs text-blue-200/80 mt-0.5">Showing inquiries, visits, and bookings exclusively for <strong>{{ $activeProj->name }}</strong> ({{ $contacts->total() }} total found)</p>
+                    <p class="text-xs text-slate-600 mt-0.5">Showing inquiries, visits, and bookings exclusively for <strong class="text-slate-900">{{ $activeProj->name }}</strong> ({{ $contacts->total() }} total found)</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <a href="{{ route('admin.leads.create', ['project_id' => $activeProj->id]) }}" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-xs flex items-center gap-1.5">
+                <a href="{{ route('admin.leads.create', ['project_id' => $activeProj->id]) }}" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-1.5">
                     <i class="fa-solid fa-plus text-[10px]"></i>
                     <span>+ Add Lead for {{ $activeProj->name }}</span>
                 </a>
-                <a href="{{ route('admin.leads.index') }}" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold backdrop-blur-xs transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-xmark"></i>
+                <a href="{{ route('admin.leads.index') }}" class="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs">
+                    <i class="fa-solid fa-xmark text-slate-400"></i>
                     <span>All Projects Pipeline</span>
                 </a>
             </div>
