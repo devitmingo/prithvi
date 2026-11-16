@@ -29,6 +29,8 @@ use App\Http\Controllers\Admin\{
 Route::get('/', [AdminAuthController::class, 'showLoginForm'])->name('login');
 Route::get('/login', [AdminAuthController::class, 'showLoginForm']);
 Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
+Route::get('/captcha', [AdminAuthController::class, 'getCaptcha'])->name('captcha');
+Route::get('/captcha/refresh', [AdminAuthController::class, 'refreshCaptcha'])->name('captcha.refresh');
 Route::match(['get', 'post'], '/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
 // Google Play Store Account Deletion URL & Direct GET/POST Deletion Handler (Preserved)

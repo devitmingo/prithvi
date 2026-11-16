@@ -110,13 +110,40 @@
                     </div>
                 </div>
 
+                <!-- Security Captcha Verification -->
+                <div>
+                    <label for="captcha" class="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center justify-between">
+                        <span>Security Verification Captcha <span class="text-rose-400">*</span></span>
+                        <span class="text-[10px] text-emerald-400 font-medium">Case-insensitive</span>
+                    </label>
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="h-11 rounded-xl overflow-hidden border border-slate-700/80 bg-slate-950 flex items-center justify-center shadow-xs shrink-0">
+                            <img id="captchaImg" src="{{ route('captcha') }}" alt="Security Captcha" class="h-full w-auto object-contain cursor-pointer" onclick="refreshCaptcha()" title="Click to refresh captcha">
+                        </div>
+                        <button type="button" onclick="refreshCaptcha()" class="h-11 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shrink-0" title="Get new security code">
+                            <i id="captchaRefreshIcon" class="fa-solid fa-arrows-rotate text-emerald-400"></i>
+                            <span class="hidden sm:inline">Refresh</span>
+                        </button>
+                    </div>
+                    <div class="relative rounded-xl shadow-xs">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                            <i class="fa-solid fa-shield-halved text-sm"></i>
+                        </div>
+                        <input type="text" name="captcha" id="captcha" required autocomplete="off" maxlength="10"
+                               placeholder="Type the 5 characters above"
+                               class="w-full pl-10 pr-4 py-2.5 bg-slate-950/60 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 text-sm tracking-widest uppercase font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                    </div>
+                </div>
+
                 <!-- Remember Me -->
                 <div class="flex items-center justify-between pt-1">
                     <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-700 bg-slate-950 text-brand-600 focus:ring-brand-500">
-                        <span class="text-xs text-slate-400 font-medium">Keep me signed in</span>
+                        <input type="checkbox" name="remember" id="remember" value="1" {{ old('remember') ? 'checked' : '' }} class="w-4 h-4 rounded border-slate-700 bg-slate-950 text-emerald-500 focus:ring-emerald-500">
+                        <span class="text-xs text-slate-300 font-medium">Remember me on this browser</span>
                     </label>
-                    <span class="text-xs text-slate-500">Secure Session</span>
+                    <span class="text-[11px] text-emerald-400 font-medium flex items-center gap-1">
+                        <i class="fa-solid fa-lock text-[10px]"></i> SSL / Encrypted
+                    </span>
                 </div>
 
                 <!-- Submit Button -->
@@ -168,9 +195,23 @@
             }
         }
 
+        function refreshCaptcha() {
+            const img = document.getElementById('captchaImg');
+            const icon = document.getElementById('captchaRefreshIcon');
+            if (icon) icon.classList.add('fa-spin');
+            img.src = "{{ route('captcha') }}?t=" + new Date().getTime();
+            setTimeout(() => {
+                if (icon) icon.classList.remove('fa-spin');
+            }, 450);
+        }
+
         function fillCredentials(login, pass) {
             document.getElementById('login').value = login;
             document.getElementById('password').value = pass;
+            const captchaInput = document.getElementById('captcha');
+            if (captchaInput) {
+                captchaInput.focus();
+            }
         }
     </script>
 </body>
