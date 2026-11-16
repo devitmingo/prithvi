@@ -127,12 +127,12 @@ class AuthController extends Controller
             ]);
         }
 
-        // 5. Role Authorization Check (Superadmin and Agent Only)
-        if (!in_array($user->role, ['Superadmin', 'Agent'])) {
+        // 5. Role Authorization Check (Superadmin Only)
+        if ($user->role !== 'Superadmin') {
             RateLimiter::hit($throttleKey, 60);
             session(['admin_login_captcha' => $this->generateCaptchaCode()]);
             return back()->withInput($request->only('login', 'remember'))->withErrors([
-                'login' => 'Access denied. You do not have administrator permissions.',
+                'login' => 'Access denied. This portal is strictly restricted to Super Administrators only.',
             ]);
         }
 

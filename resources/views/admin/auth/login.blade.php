@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Prithvi CRM</title>
+    <title>Super Admin Login - Prithvi CRM</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -28,154 +28,139 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
-<body class="h-full flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-100">
+<body class="h-full min-h-screen flex items-center justify-center p-3 sm:p-4 relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100">
 
     <!-- Atmospheric Glow Backgrounds -->
     <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-200/50 rounded-full blur-[128px] pointer-events-none"></div>
     <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-indigo-200/40 rounded-full blur-[128px] pointer-events-none"></div>
 
-    <div class="w-full max-w-md relative z-10">
+    <div class="w-full max-w-[420px] relative z-10 flex flex-col justify-center">
 
         <!-- Header / Logo -->
-        <div class="text-center mb-7">
-            <div class="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-white p-2.5 shadow-xl shadow-slate-200/60 mb-4 ring-2 ring-amber-400/70 transition-transform hover:scale-105 border border-slate-100">
+        <div class="text-center mb-4">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white p-1.5 shadow-md shadow-slate-200/80 mb-2 ring-1 ring-amber-400/80 transition-transform hover:scale-105 border border-slate-100">
                 <img src="{{ asset('images/prithvi-logo.png') }}" alt="Prithvi Buildcon" class="w-full h-full object-contain">
             </div>
-            <h1 class="text-2xl font-black text-slate-900 tracking-tight">PRITHVI BUILDCON</h1>
-            <p class="text-xs text-emerald-700 mt-1 font-bold tracking-wider uppercase">Enterprise Real Estate & CRM Portal</p>
+            <h1 class="text-xl font-black text-slate-900 tracking-tight leading-none">PRITHVI BUILDCON</h1>
+            <p class="text-[11px] text-amber-600 mt-1 font-extrabold tracking-wider uppercase flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-crown text-[10px]"></i>
+                <span>Super Admin Portal</span>
+            </p>
         </div>
 
         <!-- Login Card -->
-        <div class="bg-white border border-slate-200/90 rounded-3xl p-7 sm:p-8 shadow-xl shadow-slate-200/50">
+        <div class="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xl shadow-slate-200/50">
             
-            <div class="mb-6">
-                <h2 class="text-lg font-extrabold text-slate-900">Sign In to Dashboard</h2>
-                <p class="text-xs text-slate-500 mt-0.5">Super Admin & Agency Admin Access</p>
+            <div class="mb-4 text-center sm:text-left">
+                <h2 class="text-base font-extrabold text-slate-900">Sign In to Dashboard</h2>
+                <p class="text-[11px] text-slate-500">Super Administrator Access Only</p>
             </div>
 
             <!-- Error Alerts -->
             @if(session('error'))
-                <div class="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2.5">
+                <div class="mb-3 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium flex items-center gap-2">
                     <i class="fa-solid fa-circle-exclamation shrink-0 text-sm text-rose-600"></i>
                     <span>{{ session('error') }}</span>
                 </div>
             @endif
 
             @if(session('success'))
-                <div class="mb-5 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium flex items-center gap-2.5">
+                <div class="mb-3 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium flex items-center gap-2">
                     <i class="fa-solid fa-circle-check shrink-0 text-sm text-emerald-600"></i>
                     <span>{{ session('success') }}</span>
                 </div>
             @endif
 
             @if($errors->any())
-                <div class="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium space-y-1">
+                <div class="mb-3 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium space-y-0.5">
                     @foreach($errors->all() as $err)
-                        <p class="flex items-center gap-2"><i class="fa-solid fa-circle-xmark text-xs text-rose-600"></i> {{ $err }}</p>
+                        <p class="flex items-center gap-1.5"><i class="fa-solid fa-circle-xmark text-xs text-rose-600"></i> {{ $err }}</p>
                     @endforeach
                 </div>
             @endif
 
-            <form action="{{ route('login.submit') }}" method="POST" class="space-y-4">
+            <form action="{{ route('login.submit') }}" method="POST" class="space-y-3">
                 @csrf
 
                 <!-- Login Input (Email or Mobile) -->
                 <div>
-                    <label for="login" class="block text-xs font-bold text-slate-700 mb-1.5">Email Address or 10-digit Mobile</label>
+                    <label for="login" class="block text-[11px] font-bold text-slate-700 mb-1">Email or 10-digit Mobile</label>
                     <div class="relative rounded-xl shadow-2xs">
-                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                            <i class="fa-solid fa-user-check text-sm"></i>
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-user-shield text-xs"></i>
                         </div>
                         <input type="text" name="login" id="login" value="{{ old('login') }}" required autofocus
-                               placeholder="e.g. superadmin@gmail.com or 1234567890"
-                               class="w-full pl-10 pr-4 py-2.5 bg-slate-50/70 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-colors">
+                               placeholder="e.g. superadmin@gmail.com"
+                               class="w-full pl-9 pr-3.5 h-10 bg-slate-50/70 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-colors">
                     </div>
                 </div>
 
                 <!-- Password Input -->
                 <div>
-                    <div class="flex items-center justify-between mb-1.5">
-                        <label for="password" class="block text-xs font-bold text-slate-700">Password</label>
-                    </div>
+                    <label for="password" class="block text-[11px] font-bold text-slate-700 mb-1">Password</label>
                     <div class="relative rounded-xl shadow-2xs">
-                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                            <i class="fa-solid fa-lock text-sm"></i>
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-lock text-xs"></i>
                         </div>
                         <input type="password" name="password" id="password" required
                                placeholder="••••••••"
-                               class="w-full pl-10 pr-10 py-2.5 bg-slate-50/70 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-colors">
-                        <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 focus:outline-none">
-                            <i id="eye-icon" class="fa-solid fa-eye text-sm"></i>
+                               class="w-full pl-9 pr-9 h-10 bg-slate-50/70 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition-colors">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 focus:outline-none">
+                            <i id="eye-icon" class="fa-solid fa-eye text-xs"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Security Captcha Verification -->
+                <!-- Single Line Captcha Verification -->
                 <div>
-                    <label for="captcha" class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
-                        <span>Security Verification Captcha <span class="text-rose-500">*</span></span>
+                    <div class="flex items-center justify-between mb-1">
+                        <label for="captcha" class="block text-[11px] font-bold text-slate-700">
+                            Security Captcha <span class="text-rose-500">*</span>
+                        </label>
                         <span class="text-[10px] text-emerald-700 font-semibold">Case-insensitive</span>
-                    </label>
-                    <div class="flex items-center gap-2 mb-2">
-                        <div class="h-11 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center shadow-2xs shrink-0">
-                            <img id="captchaImg" src="{{ route('captcha') }}" alt="Security Captcha" class="h-full w-auto object-contain cursor-pointer" onclick="refreshCaptcha()" title="Click to refresh captcha">
-                        </div>
-                        <button type="button" onclick="refreshCaptcha()" class="h-11 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors shrink-0" title="Get new security code">
-                            <i id="captchaRefreshIcon" class="fa-solid fa-arrows-rotate text-emerald-600"></i>
-                            <span class="hidden sm:inline">Refresh</span>
-                        </button>
                     </div>
-                    <div class="relative rounded-xl shadow-2xs">
-                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                            <i class="fa-solid fa-shield-halved text-sm"></i>
+                    <div class="flex items-center gap-2">
+                        <!-- Captcha Image -->
+                        <div class="h-10 w-28 rounded-xl overflow-hidden border border-slate-200 bg-slate-950 flex items-center justify-center shadow-2xs shrink-0 cursor-pointer" onclick="refreshCaptcha()" title="Click to refresh captcha">
+                            <img id="captchaImg" src="{{ route('captcha') }}" alt="Captcha" class="h-full w-full object-cover">
                         </div>
-                        <input type="text" name="captcha" id="captcha" required autocomplete="off" maxlength="10"
-                               placeholder="Type the 5 characters above"
-                               class="w-full pl-10 pr-4 py-2.5 bg-slate-50/70 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 text-sm tracking-widest uppercase font-mono font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-colors">
+                        <!-- Refresh Icon Button -->
+                        <button type="button" onclick="refreshCaptcha()" class="h-10 w-9 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center transition-colors shrink-0" title="Refresh security code">
+                            <i id="captchaRefreshIcon" class="fa-solid fa-arrows-rotate text-emerald-600 text-xs"></i>
+                        </button>
+                        <!-- Code Input in the same single line -->
+                        <div class="relative flex-1 min-w-0">
+                            <input type="text" name="captcha" id="captcha" required autocomplete="off" maxlength="10"
+                                   placeholder="Enter code"
+                                   class="w-full px-3 h-10 bg-slate-50/70 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 text-xs tracking-wider uppercase font-mono font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-colors">
+                        </div>
                     </div>
                 </div>
 
-                <!-- Remember Me -->
-                <div class="flex items-center justify-between pt-1">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="remember" id="remember" value="1" {{ old('remember') ? 'checked' : '' }} class="w-4 h-4 rounded border-slate-300 bg-white text-brand-600 focus:ring-brand-500">
-                        <span class="text-xs text-slate-600 font-medium">Remember me on this browser</span>
+                <!-- Remember Me & Security Badge -->
+                <div class="flex items-center justify-between pt-0.5">
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <input type="checkbox" name="remember" id="remember" value="1" {{ old('remember') ? 'checked' : '' }} class="w-3.5 h-3.5 rounded border-slate-300 bg-white text-brand-600 focus:ring-brand-500">
+                        <span class="text-[11px] text-slate-600 font-medium">Remember me</span>
                     </label>
-                    <span class="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
-                        <i class="fa-solid fa-lock text-[10px]"></i> SSL / Encrypted
+                    <span class="text-[10px] text-emerald-700 font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-shield-halved text-[9px]"></i> Protected
                     </span>
                 </div>
 
                 <!-- Submit Button -->
-                <div class="pt-2">
-                    <button type="submit" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 shadow-md shadow-brand-500/25 transition-all cursor-pointer">
+                <div class="pt-1">
+                    <button type="submit" class="w-full h-11 flex items-center justify-center gap-2 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 shadow-md shadow-brand-500/25 transition-all cursor-pointer">
                         <span>Access Admin Dashboard</span>
-                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </button>
                 </div>
             </form>
 
-            <!-- Quick Credentials Demo Fill Buttons -->
-            <div class="mt-6 pt-5 border-t border-slate-100">
-                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 text-center">Quick Demo Sign In</p>
-                <div class="grid grid-cols-2 gap-2">
-                    <button type="button" onclick="fillCredentials('superadmin@gmail.com', 'password')" 
-                            class="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
-                        <i class="fa-solid fa-crown text-amber-500 text-[10px]"></i>
-                        <span>Super Admin</span>
-                    </button>
-                    <button type="button" onclick="fillCredentials('Shekharsahu81861@gmail.com', 'password')" 
-                            class="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
-                        <i class="fa-solid fa-user-tie text-emerald-600 text-[10px]"></i>
-                        <span>Agent / Admin</span>
-                    </button>
-                </div>
-            </div>
-
         </div>
 
-        <p class="text-center text-xs text-slate-500 mt-6 font-medium">
-            &copy; {{ date('Y') }} Prithvi CRM. All rights reserved.
+        <p class="text-center text-[11px] text-slate-400 mt-3 font-medium">
+            &copy; {{ date('Y') }} Prithvi CRM &bull; Super Admin Portal
         </p>
 
     </div>
@@ -203,15 +188,6 @@
             setTimeout(() => {
                 if (icon) icon.classList.remove('fa-spin');
             }, 450);
-        }
-
-        function fillCredentials(login, pass) {
-            document.getElementById('login').value = login;
-            document.getElementById('password').value = pass;
-            const captchaInput = document.getElementById('captcha');
-            if (captchaInput) {
-                captchaInput.focus();
-            }
         }
     </script>
 </body>
