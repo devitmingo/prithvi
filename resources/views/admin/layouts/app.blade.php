@@ -149,7 +149,7 @@
                             <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $isLeadsActive ? 'bg-brand-100 text-brand-700' : 'bg-slate-100 text-slate-600' }}">
                                 {{ $totalAllContacts }}
                             </span>
-                            <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 text-slate-400" :class="leadsOpen ? 'rotate-180' : ''"></i>
+                            <i class="fa-solid text-[10px] font-bold text-slate-400" :class="leadsOpen ? 'fa-minus' : 'fa-plus'"></i>
                         </div>
                     </button>
                     <div x-show="leadsOpen" x-cloak class="mt-1 pl-7 pr-2 space-y-1">
@@ -202,7 +202,7 @@
                             <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ request()->routeIs('admin.projects.*') ? 'bg-brand-100 text-brand-700' : 'bg-slate-100 text-slate-600' }}">
                                 {{ \App\Models\Project::count() }}
                             </span>
-                            <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 text-slate-400" :class="projOpen ? 'rotate-180' : ''"></i>
+                            <i class="fa-solid text-[10px] font-bold text-slate-400" :class="projOpen ? 'fa-minus' : 'fa-plus'"></i>
                         </div>
                     </button>
                     <div x-show="projOpen" x-cloak class="mt-1 pl-9 pr-2 space-y-1">
@@ -254,7 +254,7 @@
                             <i class="fa-solid fa-clock-rotate-left w-5 text-center text-base {{ request()->routeIs('admin.attendances.*') || request()->routeIs('admin.salary.*') ? 'text-brand-600' : 'text-slate-400' }}"></i>
                             <span>Attendance & Salary</span>
                         </div>
-                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 text-slate-400" :class="attOpen ? 'rotate-180' : ''"></i>
+                        <i class="fa-solid text-[10px] font-bold text-slate-400" :class="attOpen ? 'fa-minus' : 'fa-plus'"></i>
                     </button>
                     <div x-show="attOpen" x-cloak class="mt-1 pl-9 pr-2 space-y-1">
                         <a href="{{ route('admin.attendances.index') }}" 
@@ -292,7 +292,7 @@
                             <i class="fa-solid fa-chart-line w-5 text-center text-base {{ request()->routeIs('admin.reports.*') ? 'text-brand-600' : 'text-slate-400' }}"></i>
                             <span>Reports Hub</span>
                         </div>
-                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 text-slate-400" :class="repOpen ? 'rotate-180' : ''"></i>
+                        <i class="fa-solid text-[10px] font-bold text-slate-400" :class="repOpen ? 'fa-minus' : 'fa-plus'"></i>
                     </button>
                     <div x-show="repOpen" x-cloak class="mt-1 pl-9 pr-2 space-y-1">
                         <a href="{{ route('admin.reports.index') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.index') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
@@ -335,7 +335,7 @@
                                     <i class="fa-solid fa-database w-5 text-center text-base {{ request()->routeIs('admin.masters.*') ? 'text-amber-600' : 'text-slate-400' }}"></i>
                                     <span>Master Records</span>
                                 </div>
-                                <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200 text-slate-400" :class="masterOpen ? 'rotate-180' : ''"></i>
+                                <i class="fa-solid text-[10px] font-bold text-slate-400" :class="masterOpen ? 'fa-minus' : 'fa-plus'"></i>
                             </button>
                             <div x-show="masterOpen" x-cloak class="mt-1 pl-9 pr-2 space-y-1">
                                 <a href="{{ route('admin.masters.states.index') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.masters.states.*') ? 'text-amber-800 bg-amber-100/70 font-bold border-l-2 border-amber-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
