@@ -115,9 +115,15 @@
                                 <span class="font-semibold text-slate-800 block">
                                     {{ $att->user->designation->name ?? $att->user->role ?? 'Field Executive' }}
                                 </span>
-                                <span class="text-[10px] text-slate-400">
-                                    {{ $att->user->company_name ?? ($att->user->company->company_name ?? 'Direct Agency') }}
-                                </span>
+                                @if($att->user && $att->user->company)
+                                    <span class="text-[10px] text-blue-700 block font-medium">
+                                        <i class="fa-solid fa-user-tie text-[9px] text-blue-500"></i> Leader: {{ $att->user->company->name }}
+                                    </span>
+                                @else
+                                    <span class="text-[10px] text-slate-400">
+                                        {{ $att->user->company_name ?? 'Direct Agency' }}
+                                    </span>
+                                @endif
                             </td>
 
                             <!-- Date -->

@@ -186,6 +186,32 @@
                         <dt class="font-bold text-slate-400">Affiliated Agency / Company</dt>
                         <dd class="text-slate-900 font-semibold mt-0.5">{{ $user->company_name ?? ($user->company->company_name ?? $user->company->name ?? 'Direct Agency') }}</dd>
                     </div>
+                    @if($user->role === 'Sub Agent')
+                        <div>
+                            <dt class="font-bold text-slate-400">Reporting Leader</dt>
+                            <dd class="text-slate-900 font-bold mt-0.5 flex items-center gap-2">
+                                @if($user->company)
+                                    <a href="{{ route('admin.users.show', $user->company->id) }}" class="text-blue-600 hover:underline flex items-center gap-1.5">
+                                        <i class="fa-solid fa-user-tie text-blue-500 text-xs"></i>
+                                        <span>{{ $user->company->name }}</span>
+                                    </a>
+                                    <span class="text-[10px] text-slate-400 font-mono">({{ $user->company->agent_code ?? 'ID: ' . $user->company->id }})</span>
+                                @else
+                                    <span class="text-slate-400 italic">None Assigned</span>
+                                @endif
+                            </dd>
+                        </div>
+                    @elseif($user->role === 'Agent')
+                        <div>
+                            <dt class="font-bold text-slate-400">Team Staff Members</dt>
+                            <dd class="text-slate-900 font-bold mt-0.5">
+                                <a href="{{ route('admin.users.index', ['role' => 'Sub Agent', 'agent_id' => $user->id]) }}" class="text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 px-2.5 py-0.5 rounded-md inline-flex items-center gap-1.5 text-xs transition-colors">
+                                    <i class="fa-solid fa-users text-[10px]"></i>
+                                    <span>{{ $user->subAgents()->count() }} Staff Members</span>
+                                </a>
+                            </dd>
+                        </div>
+                    @endif
                     <div>
                         <dt class="font-bold text-slate-400">GST Registration No</dt>
                         <dd class="text-slate-900 font-semibold mt-0.5">{{ $user->gst_no ?? 'N/A' }}</dd>

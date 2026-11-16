@@ -22,7 +22,7 @@ class UserController extends Controller
         $currentUser = Auth::user();
         $isSuperAdmin = $currentUser->isSuperAdmin();
 
-        $query = User::with(['state', 'city', 'designation', 'company']);
+        $query = User::with(['state', 'city', 'designation', 'company'])->withCount('subAgents');
 
         if (!$isSuperAdmin) {
             // Agent sees only their sub-agents
@@ -417,7 +417,7 @@ class UserController extends Controller
         $currentUser = Auth::user();
         $isSuperAdmin = $currentUser->isSuperAdmin();
 
-        $query = User::with(['state', 'city', 'designation', 'company']);
+        $query = User::with(['state', 'city', 'designation', 'company'])->withCount('subAgents');
 
         if (!$isSuperAdmin) {
             $query->where('company_id', $currentUser->id);

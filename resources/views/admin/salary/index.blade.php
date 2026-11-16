@@ -234,9 +234,15 @@
                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold {{ $s->role === 'Agent' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' }}">
                                     {{ $s->role_display_name }}
                                 </span>
-                                <p class="text-[11px] text-slate-500 mt-1 truncate max-w-[140px]" title="{{ $s->company_name ?? ($s->company->company_name ?? 'Direct Agency') }}">
-                                    {{ $s->company_name ?? ($s->company->company_name ?? 'Direct Agency') }}
-                                </p>
+                                @if($s->role === 'Sub Agent' && $s->company)
+                                    <p class="text-[11px] text-blue-700 font-medium mt-1 truncate max-w-[150px]" title="Leader: {{ $s->company->name }}">
+                                        <i class="fa-solid fa-user-tie text-[9px] text-blue-500"></i> {{ $s->company->name }}
+                                    </p>
+                                @else
+                                    <p class="text-[11px] text-slate-500 mt-1 truncate max-w-[140px]" title="{{ $s->company_name ?? ($s->company->company_name ?? 'Direct Agency') }}">
+                                        {{ $s->company_name ?? ($s->company->company_name ?? 'Direct Agency') }}
+                                    </p>
+                                @endif
                             </td>
 
                             <!-- Base Salary with Quick Edit -->

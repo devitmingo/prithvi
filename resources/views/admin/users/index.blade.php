@@ -167,15 +167,63 @@
 
                             <!-- Leader Team / Designation -->
                             <td class="py-3.5 px-4">
-                                <p class="font-semibold text-slate-800 truncate max-w-[170px]" title="{{ $user->company_name ?? ($user->company->company_name ?? $user->company->name ?? 'Direct Agency') }}">
-                                    {{ $user->company_name ?? ($user->company->company_name ?? $user->company->name ?? 'Direct Agency') }}
-                                </p>
-                                <p class="text-[11px] text-slate-500 flex items-center gap-1">
-                                    <span>{{ $user->designation->name ?? 'Executive' }}</span>
-                                    @if($user->agent_code)
-                                        <span class="text-slate-400 font-mono text-[10px]">({{ $user->agent_code }})</span>
-                                    @endif
-                                </p>
+                                @if($user->role === 'Sub Agent')
+                                    <!-- Staff Member: Clearly show reporting Leader -->
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200 shadow-2xs">
+                                                <i class="fa-solid fa-user-tie text-[9px] text-blue-600"></i> Leader
+                                            </span>
+                                            @if($user->company)
+                                                <a href="{{ route('admin.users.show', $user->company->id) }}" class="font-bold text-slate-900 hover:text-blue-600 transition-colors truncate max-w-[150px]" title="Leader: {{ $user->company->name }}">
+                                                    {{ $user->company->name }}
+                                                </a>
+                                            @else
+                                                <span class="text-slate-400 italic font-medium">Direct / None</span>
+                                            @endif
+                                        </div>
+                                        <p class="text-[11px] text-slate-500 flex items-center gap-1 truncate max-w-[190px]">
+                                            <span class="font-medium text-slate-700">{{ $user->designation->name ?? 'Staff' }}</span>
+                                            @if($user->company && $user->company->company_name)
+                                                <span>•</span>
+                                                <span class="text-slate-400 truncate" title="{{ $user->company->company_name }}">{{ $user->company->company_name }}</span>
+                                            @endif
+                                        </p>
+                                    </div>
+                                @elseif($user->role === 'Agent')
+                                    <!-- Leader / Agent: Show Agency and Team size -->
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 shadow-2xs">
+                                                <i class="fa-solid fa-building text-[9px] text-emerald-600"></i> Agency
+                                            </span>
+                                            <span class="font-bold text-slate-900 truncate max-w-[150px]" title="{{ $user->company_name ?? 'Independent Agency' }}">
+                                                {{ $user->company_name ?? 'Independent Agency' }}
+                                            </span>
+                                        </div>
+                                        <p class="text-[11px] text-slate-500 flex items-center gap-1.5">
+                                            <span>{{ $user->designation->name ?? 'Agency Head' }}</span>
+                                            @php $staffCount = $user->sub_agents_count ?? $user->subAgents()->count(); @endphp
+                                            <a href="{{ route('admin.users.index', ['role' => 'Sub Agent', 'agent_id' => $user->id]) }}" 
+                                               class="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-[10px] font-bold transition-colors"
+                                               title="Click to view all {{ $staffCount }} staff members under this leader">
+                                                <i class="fa-solid fa-users text-[8px]"></i>
+                                                <span>{{ $staffCount }} Staff</span>
+                                            </a>
+                                        </p>
+                                    </div>
+                                @elseif($user->role === 'Superadmin')
+                                    <!-- Super Admin -->
+                                    <div class="space-y-0.5">
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 shadow-2xs">
+                                            <i class="fa-solid fa-crown text-[9px] text-amber-600"></i> Super Admin
+                                        </span>
+                                        <p class="text-[11px] text-slate-500 font-medium">Head Office Administration</p>
+                                    </div>
+                                @else
+                                    <p class="font-semibold text-slate-800">{{ $user->company_name ?? '—' }}</p>
+                                    <p class="text-[11px] text-slate-500">{{ $user->designation->name ?? '—' }}</p>
+                                @endif
                             </td>
 
                             <!-- Location -->
