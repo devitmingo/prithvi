@@ -119,33 +119,6 @@
                 </button>
             </div>
 
-            <!-- Active User Brief Card -->
-            <div class="px-5 py-3.5 border-b border-slate-100 bg-slate-50/70">
-                <div class="flex items-center gap-3">
-                    @if(Auth::user()->profile_photo)
-                        <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="w-10 h-10 rounded-full object-cover border-2 border-brand-500/40 shadow-xs">
-                    @else
-                        <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-700 border border-slate-300 flex items-center justify-center font-bold text-sm shadow-xs">
-                            {{ substr(Auth::user()->name, 0, 2) }}
-                        </div>
-                    @endif
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-bold text-slate-900 truncate">{{ Auth::user()->name }}</p>
-                        <div class="flex items-center gap-1.5 mt-0.5">
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold tracking-wide uppercase {{ Auth::user()->isSuperAdmin() ? 'bg-amber-100 text-amber-800 border border-amber-300/80' : 'bg-emerald-100 text-emerald-800 border border-emerald-200' }}">
-                                <i class="fa-solid {{ Auth::user()->isSuperAdmin() ? 'fa-crown text-[9px]' : (Auth::user()->isAgent() ? 'fa-user-tie text-[9px]' : 'fa-users text-[9px]') }}"></i>
-                                {{ Auth::user()->role_display_name }}
-                            </span>
-                            @if(Auth::user()->company_name)
-                                <span class="text-[11px] text-slate-500 truncate max-w-[90px]" title="{{ Auth::user()->company_name }}">
-                                    • {{ Auth::user()->company_name }}
-                                </span>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Nav Links List -->
             <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1.5 custom-scrollbar">
                 
