@@ -7,10 +7,38 @@
 @section('content')
 <div class="space-y-6" x-data="{ assignModalOpen: false, assignLeadId: null, assignLeadName: '', callModalOpen: false, callLeadId: null, callLeadName: '' }">
 
+    <!-- Active Project Specific Filter Header Banner -->
+    @if(request('project_id') && ($activeProj = $projects->first(fn($p) => $p->id == request('project_id'))))
+        <div class="p-4 bg-gradient-to-r from-blue-900 to-indigo-900 text-white rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md border border-blue-700/50">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/30 border border-blue-400/40 text-blue-200 flex items-center justify-center text-lg shrink-0">
+                    <i class="fa-solid fa-city"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-extrabold tracking-tight">{{ $activeProj->name }}</span>
+                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-md bg-emerald-500 text-white shadow-xs">Project Pipeline</span>
+                    </div>
+                    <p class="text-xs text-blue-200/80 mt-0.5">Showing inquiries, visits, and bookings exclusively for <strong>{{ $activeProj->name }}</strong> ({{ $contacts->total() }} total found)</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('admin.leads.create', ['project_id' => $activeProj->id]) }}" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-xs flex items-center gap-1.5">
+                    <i class="fa-solid fa-plus text-[10px]"></i>
+                    <span>+ Add Lead for {{ $activeProj->name }}</span>
+                </a>
+                <a href="{{ route('admin.leads.index') }}" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold backdrop-blur-xs transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-xmark"></i>
+                    <span>All Projects Pipeline</span>
+                </a>
+            </div>
+        </div>
+    @endif
+
     <!-- KPI Summary Cards with Beautiful Icons & Click-to-Filter -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <!-- All Inquiries -->
-        <a href="{{ route('admin.leads.index') }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id')])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ !request('status') ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">All Inquiries</span>
@@ -22,7 +50,7 @@
         </a>
 
         <!-- Follow Ups -->
-        <a href="{{ route('admin.leads.index', ['status' => 'follow_up']) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'status' => 'follow_up'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'follow_up' ? 'border-amber-500 ring-2 ring-amber-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Follow Ups</span>
@@ -34,7 +62,7 @@
         </a>
 
         <!-- Site Visits -->
-        <a href="{{ route('admin.leads.index', ['status' => 'site_visit_done']) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'status' => 'site_visit_done'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'site_visit_done' ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-indigo-700 uppercase tracking-wider">Site Visits</span>
@@ -46,7 +74,7 @@
         </a>
 
         <!-- Bookings Done -->
-        <a href="{{ route('admin.leads.index', ['status' => 'booking_done']) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'status' => 'booking_done'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'booking_done' ? 'border-emerald-500 ring-2 ring-emerald-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Bookings</span>
@@ -58,7 +86,7 @@
         </a>
 
         <!-- Call Later -->
-        <a href="{{ route('admin.leads.index', ['status' => 'call_later']) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'status' => 'call_later'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'call_later' ? 'border-purple-500 ring-2 ring-purple-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-purple-700 uppercase tracking-wider">Call Later</span>
@@ -70,7 +98,7 @@
         </a>
 
         <!-- Not Connecting -->
-        <a href="{{ route('admin.leads.index', ['status' => 'call_not_connecting']) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'status' => 'call_not_connecting'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'call_not_connecting' ? 'border-rose-500 ring-2 ring-rose-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-rose-700 uppercase tracking-wider">Not Reached</span>

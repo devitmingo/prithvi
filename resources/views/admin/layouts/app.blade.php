@@ -158,17 +158,73 @@
                     <span>Dashboard</span>
                 </a>
 
-                <!-- Leads / CRM -->
-                <a href="{{ route('admin.leads.index') }}" 
-                   class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->routeIs('admin.leads.*') ? 'bg-brand-600 text-white shadow-md shadow-brand-600/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
-                    <div class="flex items-center gap-3">
-                        <i class="fa-solid fa-users-line w-5 text-center text-base {{ request()->routeIs('admin.leads.*') ? 'text-white' : 'text-slate-400' }}"></i>
-                        <span>Leads & CRM</span>
+                <!-- Leads / CRM (Expandable with Project-wise Submenu) -->
+                @php
+                    $sidebarProjects = \App\Models\Project::withCount('contacts')->orderBy('name')->get();
+                    $totalAllContacts = \App\Models\Contact::count();
+                    $isLeadsActive = request()->routeIs('admin.leads.*');
+                    $currentProjId = request('project_id');
+                @endphp
+                <div x-data="{ leadsOpen: {{ $isLeadsActive ? 'true' : 'false' }} }">
+                    <button @click="leadsOpen = !leadsOpen" 
+                            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ $isLeadsActive ? 'bg-slate-800 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' }}">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-users-line w-5 text-center text-base {{ $isLeadsActive ? 'text-brand-400' : 'text-slate-400' }}"></i>
+                            <span>Leads & CRM</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ $isLeadsActive ? 'bg-brand-500/20 text-brand-300' : 'bg-slate-800 text-slate-400' }}">
+                                {{ $totalAllContacts }}
+                            </span>
+                            <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200" :class="leadsOpen ? 'rotate-180' : ''"></i>
+                        </div>
+                    </button>
+                    <div x-show="leadsOpen" x-cloak class="mt-1 pl-7 pr-2 space-y-1">
+                        <!-- All Leads Pipeline -->
+                        <a href="{{ route('admin.leads.index') }}" 
+                           class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium transition-colors {{ request()->routeIs('admin.leads.index') && !request('project_id') ? 'text-brand-400 bg-brand-500/10 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-800/40' }}">
+                            <span class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-layer-group text-[10px]"></i> All Inquiries
+                            </span>
+                            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-400">
+                                {{ $totalAllContacts }}
+                            </span>
+                        </a>
+
+                        <!-- Project Wise Submenu Header -->
+                        <div class="pt-2 pb-1 px-3 flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                            <span>By Project</span>
+                            <i class="fa-solid fa-city text-[9px]"></i>
+                        </div>
+
+                        <!-- Project Specific Submenu Links -->
+                        @foreach($sidebarProjects as $sp)
+                            @php
+                                $isThisProj = request()->routeIs('admin.leads.index') && (string)$currentProjId === (string)$sp->id;
+                            @endphp
+                            <a href="{{ route('admin.leads.index', ['project_id' => $sp->id]) }}" 
+                               class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium transition-colors {{ $isThisProj ? 'text-brand-300 bg-brand-500/20 font-bold border-l-2 border-brand-400 pl-2.5' : 'text-slate-300 hover:text-white hover:bg-slate-800/40' }}"
+                               title="{{ $sp->name }} ({{ $sp->contacts_count }} leads)">
+                                <span class="truncate max-w-[130px] flex items-center gap-1.5">
+                                    <i class="fa-solid fa-building text-[10px] {{ $isThisProj ? 'text-brand-400' : 'text-slate-400' }}"></i>
+                                    {{ $sp->name }}
+                                </span>
+                                <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded-full {{ $sp->contacts_count > 0 ? ($isThisProj ? 'bg-brand-500 text-white' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30') : 'bg-slate-800/70 text-slate-400' }}">
+                                    {{ $sp->contacts_count }}
+                                </span>
+                            </a>
+                        @endforeach
+
+                        <!-- Quick Add Lead Link -->
+                        <div class="pt-1.5">
+                            <a href="{{ route('admin.leads.create') }}" 
+                               class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-colors">
+                                <i class="fa-solid fa-plus text-[10px]"></i>
+                                <span>Add New Lead</span>
+                            </a>
+                        </div>
                     </div>
-                    <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full {{ request()->routeIs('admin.leads.*') ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400' }}">
-                        {{ \App\Models\Contact::count() }}
-                    </span>
-                </a>
+                </div>
 
                 <!-- Projects & Inventory -->
                 <div x-data="{ projOpen: {{ request()->routeIs('admin.projects.*') ? 'true' : 'false' }} }">
