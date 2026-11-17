@@ -29,10 +29,10 @@
                        class="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
 
-            <!-- Leader / Agency Filter for Superadmin -->
+            <!-- Leader Filter for Superadmin -->
             @if($isSuperAdmin)
-                <select name="agent_id" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-                    <option value="">All Leaders & Agencies</option>
+                <select name="agent_id" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium">
+                    <option value="">All Leaders</option>
                     @foreach($allAgents as $ag)
                         <option value="{{ $ag->id }}" {{ request('agent_id') == $ag->id ? 'selected' : '' }}>
                             {{ $ag->name }} {{ $ag->company_name ? "({$ag->company_name})" : '' }}

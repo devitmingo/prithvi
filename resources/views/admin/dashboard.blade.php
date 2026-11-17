@@ -22,10 +22,10 @@
                 </div>
             </div>
 
-            <!-- Agent Filter Form -->
+            <!-- Leader Filter Form -->
             <form method="GET" action="{{ route('admin.dashboard') }}" class="flex items-center gap-2 w-full md:w-auto">
-                <select name="agent_id" onchange="this.form.submit()" class="bg-slate-800 text-xs text-slate-200 border border-slate-700 rounded-xl px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:outline-none w-full md:w-56">
-                    <option value="">⚡ All Agencies & Teams</option>
+                <select name="agent_id" onchange="this.form.submit()" class="bg-slate-800 text-xs text-slate-200 border border-slate-700 rounded-xl px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:outline-none w-full md:w-56 font-semibold">
+                    <option value="">⚡ All Leaders & Teams</option>
                     @foreach($allAgents as $ag)
                         <option value="{{ $ag->id }}" {{ $selectedAgentId == $ag->id ? 'selected' : '' }}>
                             {{ $ag->name }} {{ $ag->company_name ? "({$ag->company_name})" : '' }}

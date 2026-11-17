@@ -201,10 +201,10 @@
                 <option value="not_interested" {{ request('status') === 'not_interested' ? 'selected' : '' }}>Not Interested</option>
             </select>
 
-            <!-- Agent Filter for Superadmin -->
+            <!-- Leader Filter for Superadmin -->
             @if($isSuperAdmin && $agents->count() > 0)
                 <select name="agent_id" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500">
-                    <option value="">All Agencies</option>
+                    <option value="">All Leaders</option>
                     @foreach($agents as $ag)
                         <option value="{{ $ag->id }}" {{ request('agent_id') == $ag->id ? 'selected' : '' }}>{{ $ag->name }}</option>
                     @endforeach

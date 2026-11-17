@@ -16,7 +16,7 @@
             <div class="relative flex-1 min-w-[200px]">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                 <input type="text" name="search" value="{{ request('search') }}" 
-                       placeholder="Search executive name, mobile, agency..."
+                       placeholder="Search executive name, mobile, leader..."
                        class="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent">
             </div>
 
@@ -28,10 +28,10 @@
                 <option value="Superadmin" {{ request('role') === 'Superadmin' ? 'selected' : '' }}>Superadmins only</option>
             </select>
 
-            <!-- Agency Filter for Superadmin -->
+            <!-- Leader Filter for Superadmin -->
             @if($isSuperAdmin && $allAgents->count() > 0)
-                <select name="agent_id" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500">
-                    <option value="">All Agencies</option>
+                <select name="agent_id" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500 font-medium">
+                    <option value="">All Leaders</option>
                     @foreach($allAgents as $ag)
                         <option value="{{ $ag->id }}" {{ request('agent_id') == $ag->id ? 'selected' : '' }}>{{ $ag->name }}</option>
                     @endforeach
@@ -341,7 +341,7 @@
             </div>
             <div>
                 <h3 class="text-base font-extrabold text-slate-900">No Executives Match Filters</h3>
-                <p class="text-xs text-slate-500 mt-1">Try clearing your search query, agency, or role filters to view executive lead cards.</p>
+                <p class="text-xs text-slate-500 mt-1">Try clearing your search query, leader, or role filters to view executive lead cards.</p>
             </div>
             <a href="{{ route('admin.reports.user-leads') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition">
                 <i class="fa-solid fa-rotate-left"></i>

@@ -17,7 +17,7 @@
             
             @if($isSuperAdmin && $allAgents->count() > 0)
                 <select name="agent_id" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500">
-                    <option value="">All Agencies</option>
+                    <option value="">All Leaders</option>
                     @foreach($allAgents as $ag)
                         <option value="{{ $ag->id }}" {{ request('agent_id') == $ag->id ? 'selected' : '' }}>{{ $ag->name }}</option>
                     @endforeach
