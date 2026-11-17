@@ -52,7 +52,8 @@
                 @if($user->profile_photo)
                     <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" 
                          @click="modalImgSrc = '{{ $user->profile_photo_url }}'; modalImgTitle = 'Profile Photo: {{ $user->name }}'; modalOpen = true"
-                         class="w-20 h-20 rounded-2xl object-cover border-2 border-brand-500 shadow-md cursor-pointer hover:opacity-90">
+                         class="w-20 h-20 rounded-2xl object-cover border-2 border-brand-500 shadow-md cursor-pointer hover:opacity-90"
+                         onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&color=1d4ed8&background=dbeafe';">
                 @else
                     <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-black text-2xl shadow-md">
                         {{ substr($user->name, 0, 2) }}

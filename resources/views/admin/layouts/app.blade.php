@@ -441,7 +441,10 @@
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" @click.away="open = false" class="flex items-center gap-3 p-1 rounded-xl hover:bg-slate-100 transition-colors focus:outline-none">
                             @if(Auth::user()->profile_photo)
-                                <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" class="w-9 h-9 rounded-full object-cover border border-slate-300 shadow-xs">
+                                <img src="{{ Auth::user()->profile_photo_url }}" 
+                                     alt="{{ Auth::user()->name }}" 
+                                     class="w-9 h-9 rounded-full object-cover border border-slate-300 shadow-xs"
+                                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&color=1d4ed8&background=dbeafe';">
                             @else
                                 <div class="w-9 h-9 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-xs border border-brand-200">
                                     {{ substr(Auth::user()->name, 0, 2) }}

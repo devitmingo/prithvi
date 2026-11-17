@@ -90,7 +90,8 @@
                                 @if($att->image)
                                     <img src="{{ $att->image_url }}" alt="Selfie" 
                                          @click="modalImgSrc = '{{ $att->image_url }}'; modalImgTitle = 'Attendance Punch Selfie: {{ $att->user->name ?? 'User' }} ({{ $att->date }} {{ $att->time }})'; imgModalOpen = true"
-                                         class="w-11 h-11 rounded-xl object-cover border border-slate-200 shadow-2xs cursor-pointer hover:opacity-85 transition-opacity">
+                                         class="w-11 h-11 rounded-xl object-cover border border-slate-200 shadow-2xs cursor-pointer hover:opacity-85 transition-opacity"
+                                         onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($att->user->name ?? 'User') }}&color=059669&background=d1fae5';">
                                 @else
                                     <div class="w-11 h-11 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center font-bold text-xs border border-slate-200">
                                         <i class="fa-solid fa-camera"></i>

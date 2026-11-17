@@ -41,6 +41,34 @@ Route::get('superadmin/users-export', [ExcelExportController::class, 'usersExpor
 
 /*
 |--------------------------------------------------------------------------
+| Storage Asset Delivery Route (Guarantees image availability on live servers)
+|--------------------------------------------------------------------------
+*/
+Route::get('storage/{path}', function (string $path) {
+    $cleanPath = str_replace(['../', '..\\'], '', $path);
+    
+    $candidates = [
+        storage_path('app/public/' . $cleanPath),
+        storage_path('app/public/public/' . $cleanPath),
+        public_path('storage/' . $cleanPath),
+    ];
+
+    foreach ($candidates as $filePath) {
+        if (file_exists($filePath) && is_file($filePath)) {
+            $mime = mime_content_type($filePath) ?: 'application/octet-stream';
+            return response()->file($filePath, [
+                'Content-Type' => $mime,
+                'Cache-Control' => 'public, max-age=31536000, immutable',
+                'Access-Control-Allow-Origin' => '*',
+            ]);
+        }
+    }
+
+    abort(404);
+})->where('path', '.*')->name('storage.asset');
+
+/*
+|--------------------------------------------------------------------------
 | Admin & Superadmin Panel Routes
 |--------------------------------------------------------------------------
 */
@@ -52,6 +80,20 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'superadminoragent']
     Route::get('/profile', [AdminAuthController::class, 'profile'])->name('profile');
     Route::post('/profile', [AdminAuthController::class, 'updateProfile'])->name('profile.update');
     Route::post('/password/update', [AdminAuthController::class, 'updatePassword'])->name('password.update');
+
+    // Superadmin Storage Link Repair Helper
+    Route::get('/fix-storage-link', function () {
+        if (!Auth::user()->isSuperAdmin()) {
+            abort(403);
+        }
+        try {
+            \Illuminate\Support\Facades\Artisan::call('storage:link');
+            $msg = \Illuminate\Support\Facades\Artisan::output();
+        } catch (\Throwable $e) {
+            $msg = $e->getMessage();
+        }
+        return back()->with('success', 'Storage link execution result: ' . ($msg ?: 'Done'));
+    })->name('storage.link');
 
     // Users Management (CRUD)
     Route::get('/users/export', [AdminUserController::class, 'export'])->name('users.export');

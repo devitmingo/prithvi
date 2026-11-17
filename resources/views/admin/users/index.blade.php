@@ -120,7 +120,10 @@
                             <td class="py-3.5 px-4">
                                 <div class="flex items-center gap-3">
                                     @if($user->profile_photo)
-                                        <img src="{{ $user->profile_photo_url }}" alt="{{ $user->name }}" class="w-10 h-10 rounded-full object-cover border border-slate-200 shrink-0">
+                                        <img src="{{ $user->profile_photo_url }}" 
+                                             alt="{{ $user->name }}" 
+                                             class="w-10 h-10 rounded-full object-cover border border-slate-200 shrink-0"
+                                             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&color=1d4ed8&background=dbeafe';">
                                     @else
                                         <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs shrink-0 border border-slate-200">
                                             {{ substr($user->name, 0, 2) }}
