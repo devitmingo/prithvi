@@ -627,12 +627,17 @@ class ReportController extends Controller
             usort($userCards, fn($a, $b) => strcasecmp($a['user']->name, $b['user']->name));
         }
 
+        // Filter by active leads if requested
+        if ($request->get('filter_leads') === 'active') {
+            $userCards = array_values(array_filter($userCards, fn($c) => $c['total_leads'] > 0));
+        }
+
         // CSV Export Trigger
         if ($request->get('export') === 'csv') {
             $filename = 'userwise_leads_report_' . date('Y_m_d_His') . '.csv';
             return new StreamedResponse(function () use ($userCards) {
                 $handle = fopen('php://output', 'w');
-                fputcsv($handle, ['User ID', 'Executive Name', 'Role', 'Leader / Agency', 'Mobile', 'Total Leads', 'Follow Ups', 'Site Visits', 'Bookings', 'Call Later', 'Not Reached', 'Calls Made', 'Conversion %']);
+                fputcsv($handle, ['User ID', 'Executive Name', 'Role', 'Leader', 'Mobile', 'Total Leads', 'Follow Ups', 'Site Visits', 'Bookings', 'Call Later', 'Not Reached', 'Calls Made', 'Conversion %']);
                 foreach ($userCards as $c) {
                     $u = $c['user'];
                     $leaderOrAgency = $u->role === 'Agent' 
@@ -663,12 +668,16 @@ class ReportController extends Controller
 
         $projects = Project::where('status', 1)->orderBy('name')->get();
         $allAgents = $isSuperAdmin ? User::where('role', 'Agent')->orderBy('name')->get() : collect();
+        $totalLeaders = User::where('role', 'Agent')->count();
+        $totalStaff = User::where('role', 'Sub Agent')->count();
 
         return view('admin.reports.user_leads', compact(
             'userCards',
             'overallStats',
             'projects',
             'allAgents',
+            'totalLeaders',
+            'totalStaff',
             'isSuperAdmin'
         ));
     }
