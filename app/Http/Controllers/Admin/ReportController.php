@@ -468,4 +468,208 @@ class ReportController extends Controller
 
         return view('admin.reports.user_growth', compact('usersByRole', 'usersByStatus', 'months', 'counts', 'recentUsers'));
     }
+
+    /**
+     * 7. User-wise Leads Report (Card View)
+     * Rich card representation of each team member's leads, calls, visits, and bookings
+     * with one-click drill-down to full history in Leads & CRM.
+     */
+    public function userLeads(Request $request)
+    {
+        $currentUser = Auth::user();
+        $isSuperAdmin = $currentUser->isSuperAdmin();
+
+        $usersQuery = User::with(['company', 'designation'])->withCount(['subAgents']);
+
+        // Team scoping
+        if (!$isSuperAdmin) {
+            $usersQuery->where(function ($q) use ($currentUser) {
+                $q->where('id', $currentUser->id)->orWhere('company_id', $currentUser->id);
+            });
+        } elseif ($request->filled('agent_id')) {
+            $usersQuery->where(function ($q) use ($request) {
+                $q->where('id', $request->agent_id)->orWhere('company_id', $request->agent_id);
+            });
+        }
+
+        // Role filtering
+        if ($request->filled('role')) {
+            $usersQuery->where('role', $request->role);
+        } else {
+            $usersQuery->whereIn('role', ['Agent', 'Sub Agent', 'Superadmin']);
+        }
+
+        // Search query
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $usersQuery->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('mobile', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('agency_name', 'like', "%{$search}%");
+            });
+        }
+
+        $allUsers = $usersQuery->orderBy('name')->get();
+
+        // Calculate lead metrics for each user
+        $dateFrom = $request->date_from;
+        $dateTo = $request->date_to;
+        $projectId = $request->project_id;
+
+        // Build lead statistics aggregation query
+        $leadStatsQuery = Contact::select(
+            'user_id',
+            DB::raw('count(*) as total_leads'),
+            DB::raw('sum(case when status = "follow_up" then 1 else 0 end) as follow_up'),
+            DB::raw('sum(case when status = "site_visit_done" then 1 else 0 end) as site_visit_done'),
+            DB::raw('sum(case when status = "booking_done" then 1 else 0 end) as booking_done'),
+            DB::raw('sum(case when status = "call_later" then 1 else 0 end) as call_later'),
+            DB::raw('sum(case when status = "call_not_connecting" then 1 else 0 end) as not_connecting'),
+            DB::raw('sum(case when status = "interested" then 1 else 0 end) as interested'),
+            DB::raw('max(created_at) as latest_lead_at')
+        );
+
+        if ($projectId) {
+            $leadStatsQuery->where('project_id', $projectId);
+        }
+        if ($dateFrom) {
+            $leadStatsQuery->whereDate('date', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $leadStatsQuery->whereDate('date', '<=', $dateTo);
+        }
+
+        $leadStatsByUser = $leadStatsQuery->groupBy('user_id')->get()->keyBy('user_id');
+
+        // Build call logs aggregation query
+        $callsQuery = ContactCallHistory::select('user_id', DB::raw('count(*) as total_calls'));
+        if ($dateFrom) {
+            $callsQuery->whereDate('created_at', '>=', $dateFrom);
+        }
+        if ($dateTo) {
+            $callsQuery->whereDate('created_at', '<=', $dateTo);
+        }
+        $callCountsByUser = $callsQuery->groupBy('user_id')->pluck('total_calls', 'user_id')->toArray();
+
+        // Build composite user cards
+        $userCards = [];
+        $overallStats = [
+            'total_users' => 0,
+            'users_with_leads' => 0,
+            'total_leads' => 0,
+            'follow_up' => 0,
+            'site_visit_done' => 0,
+            'booking_done' => 0,
+            'call_later' => 0,
+            'not_connecting' => 0,
+            'total_calls' => 0,
+        ];
+
+        foreach ($allUsers as $u) {
+            $stats = $leadStatsByUser->get($u->id);
+            $totalLeads = $stats ? (int)$stats->total_leads : 0;
+            $followUps = $stats ? (int)$stats->follow_up : 0;
+            $siteVisits = $stats ? (int)$stats->site_visit_done : 0;
+            $bookings = $stats ? (int)$stats->booking_done : 0;
+            $callLater = $stats ? (int)$stats->call_later : 0;
+            $notConnecting = $stats ? (int)$stats->not_connecting : 0;
+            $interested = $stats ? (int)$stats->interested : 0;
+            $latestLeadAt = $stats ? $stats->latest_lead_at : null;
+
+            $callsCount = $callCountsByUser[$u->id] ?? 0;
+
+            // Conversion Rate: % of leads converted to visit or booking
+            $conversionRate = $totalLeads > 0 ? round((($siteVisits + $bookings) / $totalLeads) * 100, 1) : 0;
+
+            $card = [
+                'user' => $u,
+                'total_leads' => $totalLeads,
+                'follow_up' => $followUps,
+                'site_visit_done' => $siteVisits,
+                'booking_done' => $bookings,
+                'call_later' => $callLater,
+                'not_connecting' => $notConnecting,
+                'interested' => $interested,
+                'calls_count' => $callsCount,
+                'latest_lead_at' => $latestLeadAt,
+                'conversion_rate' => $conversionRate,
+            ];
+
+            $userCards[] = $card;
+
+            $overallStats['total_users']++;
+            if ($totalLeads > 0) {
+                $overallStats['users_with_leads']++;
+            }
+            $overallStats['total_leads'] += $totalLeads;
+            $overallStats['follow_up'] += $followUps;
+            $overallStats['site_visit_done'] += $siteVisits;
+            $overallStats['booking_done'] += $bookings;
+            $overallStats['call_later'] += $callLater;
+            $overallStats['not_connecting'] += $notConnecting;
+            $overallStats['total_calls'] += $callsCount;
+        }
+
+        // Sorting
+        $sortBy = $request->get('sort', 'leads_desc');
+        if ($sortBy === 'leads_desc') {
+            usort($userCards, fn($a, $b) => $b['total_leads'] <=> $a['total_leads']);
+        } elseif ($sortBy === 'bookings_desc') {
+            usort($userCards, fn($a, $b) => $b['booking_done'] <=> $a['booking_done']);
+        } elseif ($sortBy === 'visits_desc') {
+            usort($userCards, fn($a, $b) => $b['site_visit_done'] <=> $a['site_visit_done']);
+        } elseif ($sortBy === 'conversion_desc') {
+            usort($userCards, fn($a, $b) => $b['conversion_rate'] <=> $a['conversion_rate']);
+        } elseif ($sortBy === 'calls_desc') {
+            usort($userCards, fn($a, $b) => $b['calls_count'] <=> $a['calls_count']);
+        } elseif ($sortBy === 'name_asc') {
+            usort($userCards, fn($a, $b) => strcasecmp($a['user']->name, $b['user']->name));
+        }
+
+        // CSV Export Trigger
+        if ($request->get('export') === 'csv') {
+            $filename = 'userwise_leads_report_' . date('Y_m_d_His') . '.csv';
+            return new StreamedResponse(function () use ($userCards) {
+                $handle = fopen('php://output', 'w');
+                fputcsv($handle, ['User ID', 'Executive Name', 'Role', 'Leader / Agency', 'Mobile', 'Total Leads', 'Follow Ups', 'Site Visits', 'Bookings', 'Call Later', 'Not Reached', 'Calls Made', 'Conversion %']);
+                foreach ($userCards as $c) {
+                    $u = $c['user'];
+                    $leaderOrAgency = $u->role === 'Agent' 
+                        ? ($u->agency_name ?: 'Self Agency') 
+                        : ($u->company->name ?? 'Unassigned');
+                    fputcsv($handle, [
+                        $u->user_id,
+                        $u->name,
+                        $u->role === 'Agent' ? 'Leader' : ($u->role === 'Sub Agent' ? 'Staff' : $u->role),
+                        $leaderOrAgency,
+                        $u->mobile,
+                        $c['total_leads'],
+                        $c['follow_up'],
+                        $c['site_visit_done'],
+                        $c['booking_done'],
+                        $c['call_later'],
+                        $c['not_connecting'],
+                        $c['calls_count'],
+                        $c['conversion_rate'] . '%'
+                    ]);
+                }
+                fclose($handle);
+            }, 200, [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+            ]);
+        }
+
+        $projects = Project::where('status', 1)->orderBy('name')->get();
+        $allAgents = $isSuperAdmin ? User::where('role', 'Agent')->orderBy('name')->get() : collect();
+
+        return view('admin.reports.user_leads', compact(
+            'userCards',
+            'overallStats',
+            'projects',
+            'allAgents',
+            'isSuperAdmin'
+        ));
+    }
 }

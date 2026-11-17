@@ -48,7 +48,13 @@ class ContactController extends Controller
         }
 
         if ($request->filled('user_id')) {
-            $query->where('user_id', $request->user_id);
+            $userId = $request->user_id;
+            $query->where(function ($q) use ($userId) {
+                $q->where('user_id', $userId)
+                  ->orWhereHas('leadAssigns', function ($sub) use ($userId) {
+                      $sub->where('user_id', $userId);
+                  });
+            });
         }
 
         if ($request->filled('date_from')) {
@@ -90,6 +96,20 @@ class ContactController extends Controller
             $statsQuery->whereIn('user_id', $agentTeamIds);
         }
 
+        if ($request->filled('user_id')) {
+            $userId = $request->user_id;
+            $statsQuery->where(function ($q) use ($userId) {
+                $q->where('user_id', $userId)
+                  ->orWhereHas('leadAssigns', function ($sub) use ($userId) {
+                      $sub->where('user_id', $userId);
+                  });
+            });
+        }
+
+        if ($request->filled('project_id')) {
+            $statsQuery->where('project_id', $request->project_id);
+        }
+
         $stats = [
             'total' => (clone $statsQuery)->count(),
             'follow_up' => (clone $statsQuery)->where('status', 'follow_up')->count(),
@@ -111,7 +131,9 @@ class ContactController extends Controller
             $agents = collect();
         }
 
-        return view('admin.leads.index', compact('contacts', 'stats', 'projects', 'assignableUsers', 'agents', 'isSuperAdmin', 'callCountsByPhone'));
+        $selectedUser = $request->filled('user_id') ? User::with('company')->find($request->user_id) : null;
+
+        return view('admin.leads.index', compact('contacts', 'stats', 'projects', 'assignableUsers', 'agents', 'isSuperAdmin', 'callCountsByPhone', 'selectedUser'));
     }
 
     /**

@@ -155,13 +155,22 @@
                     <div x-show="leadsOpen" x-cloak class="mt-1 pl-7 pr-2 space-y-1">
                         <!-- All Leads Pipeline -->
                         <a href="{{ route('admin.leads.index') }}" 
-                           class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors {{ request()->routeIs('admin.leads.index') && !request('project_id') ? 'text-brand-700 bg-brand-50 border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
+                           class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors {{ request()->routeIs('admin.leads.index') && !request('project_id') && !request('user_id') ? 'text-brand-700 bg-brand-50 border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             <span class="flex items-center gap-1.5">
                                 <i class="fa-solid fa-layer-group text-[10px] text-slate-400"></i> All Inquiries
                             </span>
                             <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-600 font-medium">
                                 {{ $totalAllContacts }}
                             </span>
+                        </a>
+
+                        <!-- User-wise Lead Cards -->
+                        <a href="{{ route('admin.reports.user-leads') }}" 
+                           class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors {{ request()->routeIs('admin.reports.user-leads') ? 'text-brand-700 bg-brand-50 border-l-2 border-brand-600 pl-2.5 font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
+                            <span class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-address-card text-[10px] text-brand-600"></i> User-wise Cards
+                            </span>
+                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-brand-100 text-brand-700 font-bold uppercase">Cards</span>
                         </a>
 
                         <!-- Project Wise Submenu Header -->
@@ -300,6 +309,9 @@
                         </a>
                         <a href="{{ route('admin.reports.leads') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.leads') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • Leads & Pipeline Funnel
+                        </a>
+                        <a href="{{ route('admin.reports.user-leads') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.user-leads') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
+                            • User-wise Leads Cards
                         </a>
                         <a href="{{ route('admin.reports.agent-performance') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.agent-performance') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • Agent & Staff Performance

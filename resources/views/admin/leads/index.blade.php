@@ -27,9 +27,54 @@
                     <i class="fa-solid fa-plus text-[10px]"></i>
                     <span>+ Add Lead for {{ $activeProj->name }}</span>
                 </a>
-                <a href="{{ route('admin.leads.index') }}" class="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs">
+                <a href="{{ route('admin.leads.index', array_filter(['user_id' => request('user_id')])) }}" class="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs">
                     <i class="fa-solid fa-xmark text-slate-400"></i>
                     <span>All Projects Pipeline</span>
+                </a>
+            </div>
+        </div>
+    @endif
+
+    <!-- Active User Specific Filter Header Banner -->
+    @if(request('user_id') && ($activeUser = ($selectedUser ?? \App\Models\User::find(request('user_id')))))
+        <div class="p-4 bg-gradient-to-r from-blue-50/90 via-indigo-50/50 to-white text-slate-800 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs border border-blue-200/90">
+            <div class="flex items-center gap-3.5">
+                <div class="relative shrink-0">
+                    <img src="{{ $activeUser->profile_photo_url }}" 
+                         alt="{{ $activeUser->name }}" 
+                         onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ urlencode($activeUser->name) }}&background=0D8ABC&color=fff';"
+                         class="w-11 h-11 rounded-xl object-cover border-2 border-white shadow-xs">
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-sm font-extrabold text-slate-900 tracking-tight">{{ $activeUser->name }}</span>
+                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-md bg-brand-600 text-white shadow-2xs">
+                            {{ $activeUser->role === 'Agent' ? 'Leader' : ($activeUser->role === 'Sub Agent' ? 'Staff' : $activeUser->role) }}
+                        </span>
+                        @if($activeUser->mobile)
+                            <span class="text-xs text-slate-500 font-semibold flex items-center gap-1">
+                                <i class="fa-solid fa-phone text-[10px] text-slate-400"></i> {{ $activeUser->mobile }}
+                            </span>
+                        @endif
+                        @if($activeUser->company)
+                            <span class="text-xs text-slate-500">
+                                • Under: <strong class="text-slate-700">{{ $activeUser->company->name }}</strong>
+                            </span>
+                        @endif
+                    </div>
+                    <p class="text-xs text-slate-600 mt-0.5">
+                        Showing all CRM inquiries, calls, and history handled by <strong class="text-slate-900">{{ $activeUser->name }}</strong> ({{ $contacts->total() }} total found)
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('admin.reports.user-leads') }}" class="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs">
+                    <i class="fa-solid fa-address-card text-brand-600"></i>
+                    <span>All User Cards</span>
+                </a>
+                <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id')])) }}" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs">
+                    <i class="fa-solid fa-xmark text-slate-300"></i>
+                    <span>Clear User Filter</span>
                 </a>
             </div>
         </div>
@@ -38,7 +83,7 @@
     <!-- KPI Summary Cards with Beautiful Icons & Click-to-Filter -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <!-- All Inquiries -->
-        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id')])) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id')])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ !request('status') ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">All Inquiries</span>
@@ -50,7 +95,7 @@
         </a>
 
         <!-- Follow Ups -->
-        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'status' => 'follow_up'])) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'follow_up'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'follow_up' ? 'border-amber-500 ring-2 ring-amber-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Follow Ups</span>
@@ -62,7 +107,7 @@
         </a>
 
         <!-- Site Visits -->
-        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'status' => 'site_visit_done'])) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'site_visit_done'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'site_visit_done' ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-indigo-700 uppercase tracking-wider">Site Visits</span>
@@ -74,7 +119,7 @@
         </a>
 
         <!-- Bookings Done -->
-        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'status' => 'booking_done'])) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'booking_done'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'booking_done' ? 'border-emerald-500 ring-2 ring-emerald-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Bookings</span>
@@ -86,7 +131,7 @@
         </a>
 
         <!-- Call Later -->
-        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'status' => 'call_later'])) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'call_later'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'call_later' ? 'border-purple-500 ring-2 ring-purple-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-purple-700 uppercase tracking-wider">Call Later</span>
@@ -98,7 +143,7 @@
         </a>
 
         <!-- Not Connecting -->
-        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'status' => 'call_not_connecting'])) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'call_not_connecting'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'call_not_connecting' ? 'border-rose-500 ring-2 ring-rose-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-rose-700 uppercase tracking-wider">Not Reached</span>
@@ -131,6 +176,18 @@
                 @endforeach
             </select>
 
+            <!-- Executive / User Filter -->
+            @if(isset($assignableUsers) && $assignableUsers->count() > 0)
+                <select name="user_id" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 font-medium">
+                    <option value="">All Executives</option>
+                    @foreach($assignableUsers as $u)
+                        <option value="{{ $u->id }}" {{ request('user_id') == $u->id ? 'selected' : '' }}>
+                            {{ $u->name }} ({{ $u->role === 'Agent' ? 'Leader' : ($u->role === 'Sub Agent' ? 'Staff' : $u->role) }})
+                        </option>
+                    @endforeach
+                </select>
+            @endif
+
             <!-- Status Filter -->
             <select name="status" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500">
                 <option value="">All Statuses</option>
@@ -159,17 +216,23 @@
                 <span>Filter</span>
             </button>
 
-            @if(request()->hasAny(['search', 'project_id', 'status', 'agent_id']))
+            @if(request()->hasAny(['search', 'project_id', 'status', 'agent_id', 'user_id']))
                 <a href="{{ route('admin.leads.index') }}" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200 transition" title="Reset Filters">
                     <i class="fa-solid fa-rotate-left"></i>
                 </a>
             @endif
         </form>
 
-        <a href="{{ route('admin.leads.create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-semibold shadow-sm transition-all whitespace-nowrap">
-            <i class="fa-solid fa-user-plus text-xs"></i>
-            <span>Add New Lead</span>
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('admin.reports.user-leads') }}" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-2xs transition whitespace-nowrap">
+                <i class="fa-solid fa-address-card text-brand-600"></i>
+                <span>User-wise Cards</span>
+            </a>
+            <a href="{{ route('admin.leads.create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-semibold shadow-sm transition-all whitespace-nowrap">
+                <i class="fa-solid fa-user-plus text-xs"></i>
+                <span>Add New Lead</span>
+            </a>
+        </div>
     </div>
 
     <!-- Leads Table Card -->

@@ -47,6 +47,26 @@
             </div>
         </div>
 
+        <!-- Report: User-wise Leads Cards -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group ring-1 ring-brand-500/10">
+            <div class="space-y-3">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xl group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-address-card"></i>
+                </div>
+                <h3 class="text-base font-extrabold text-slate-900">User-wise Leads & CRM Cards</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    Card-by-card lead breakdown per executive with inquiry counts, follow-ups, visits, and bookings. Click any card to drill into full history.
+                </p>
+            </div>
+            <div class="pt-5 border-t border-slate-100 flex items-center justify-between mt-4">
+                <span class="text-xs text-brand-600 font-bold uppercase tracking-wider text-[10px] bg-brand-50 px-2 py-0.5 rounded-md">Drill-Down</span>
+                <a href="{{ route('admin.reports.user-leads') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-colors shadow-2xs">
+                    <span>Open Cards</span>
+                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </a>
+            </div>
+        </div>
+
         <!-- Report 2: Agent & Staff Performance -->
         <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group">
             <div class="space-y-3">

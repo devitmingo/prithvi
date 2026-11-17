@@ -134,6 +134,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'superadminoragent']
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/', [AdminReportController::class, 'index'])->name('index');
         Route::get('/leads', [AdminReportController::class, 'leads'])->name('leads');
+        Route::get('/user-leads', [AdminReportController::class, 'userLeads'])->name('user-leads');
         Route::get('/agent-performance', [AdminReportController::class, 'agentPerformance'])->name('agent-performance');
         Route::get('/attendance', [AdminReportController::class, 'attendance'])->name('attendance');
         Route::get('/site-visits', [AdminReportController::class, 'siteVisits'])->name('site-visits');
