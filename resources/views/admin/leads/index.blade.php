@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
 @section('title', 'Leads & CRM')
-@section('page-title', $viewMode === 'cards' ? 'Customer Inquiries & Project Cards' : 'Customer Inquiries & Leads')
+@section('page-title', $viewMode === 'cards' ? 'Customer Inquiries & Project Pipeline' : 'Customer Inquiries & Leads')
 @section('page-subtitle', $viewMode === 'cards' ? 'Project-wise CRM pipeline, active inquiries breakdown, site visits, and conversion rates' : 'Track prospect pipeline, schedule site visits, monitor follow-ups, and track call frequencies')
 
 @section('content')
@@ -58,7 +58,7 @@
                 </a>
                 <a href="{{ route('admin.leads.index', ['view' => 'cards']) }}" class="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs">
                     <i class="fa-solid fa-city text-brand-600"></i>
-                    <span>Project Cards View</span>
+                    <span>Project-wise Leads</span>
                 </a>
                 <a href="{{ route('admin.leads.index', array_filter(['user_id' => request('user_id'), 'view' => 'table'])) }}" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs">
                     <i class="fa-solid fa-xmark text-slate-300"></i>
@@ -115,8 +115,8 @@
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ route('admin.reports.user-leads') }}" class="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs">
-                    <i class="fa-solid fa-address-card text-brand-600"></i>
-                    <span>All User Cards</span>
+                    <i class="fa-solid fa-users text-brand-600"></i>
+                    <span>User-wise Leads</span>
                 </a>
                 <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'view' => $viewMode])) }}" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs">
                     <i class="fa-solid fa-xmark text-slate-300"></i>
@@ -225,11 +225,11 @@
         
         <!-- View Mode Segmented Controls -->
         <div class="inline-flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/70 shadow-2xs">
-            <!-- 1. Project-wise Cards Switcher -->
+            <!-- 1. Project-wise Switcher -->
             <a href="{{ route('admin.leads.index', array_filter(['view' => 'cards', 'user_id' => request('user_id'), 'status' => request('status')])) }}" 
                class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all {{ $viewMode === 'cards' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900' }}">
                 <i class="fa-solid fa-city {{ $viewMode === 'cards' ? 'text-brand-600' : 'text-slate-400' }}"></i>
-                <span>Project-wise Cards</span>
+                <span>Project-wise Leads</span>
                 <span class="text-[10px] font-extrabold px-1.5 py-0.2 rounded-md {{ $viewMode === 'cards' ? 'bg-brand-50 text-brand-700' : 'bg-slate-200 text-slate-600' }}">
                     {{ count($projectCards) }}
                 </span>
@@ -245,11 +245,11 @@
                 </span>
             </a>
 
-            <!-- 3. User-wise Cards Link -->
+            <!-- 3. User-wise Leads Link -->
             <a href="{{ route('admin.reports.user-leads') }}" 
                class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-white/60 transition-all">
-                <i class="fa-solid fa-address-card text-brand-600"></i>
-                <span>User Cards</span>
+                <i class="fa-solid fa-users text-purple-600"></i>
+                <span>User-wise Leads</span>
             </a>
         </div>
 
@@ -601,11 +601,11 @@
             <div class="flex items-center gap-2">
                 <a href="{{ route('admin.leads.index', ['view' => 'cards']) }}" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-2xs transition whitespace-nowrap">
                     <i class="fa-solid fa-city text-brand-600"></i>
-                    <span>Project Cards</span>
+                    <span>Project-wise Leads</span>
                 </a>
                 <a href="{{ route('admin.reports.user-leads') }}" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-2xs transition whitespace-nowrap">
-                    <i class="fa-solid fa-address-card text-brand-600"></i>
-                    <span>User Cards</span>
+                    <i class="fa-solid fa-users text-brand-600"></i>
+                    <span>User-wise Leads</span>
                 </a>
             </div>
         </div>

@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
-@section('title', 'User-wise Leads & CRM Cards')
-@section('page-title', 'Executive Leads & Pipeline Cards')
+@section('title', 'User-wise Leads & CRM')
+@section('page-title', 'Executive Leads & Pipeline')
 @section('page-subtitle', 'Active leads (follow ups, visits, call later), call attempts, unreached calls, and one-click list drill-down')
 
 @section('content')

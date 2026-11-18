@@ -131,12 +131,10 @@
                     <span>Dashboard</span>
                 </a>
 
-                <!-- Leads / CRM (Expandable with Project-wise Submenu) -->
+                <!-- Leads / CRM (Expandable Submenu) -->
                 @php
-                    $sidebarProjects = \App\Models\Project::withCount('contacts')->orderBy('name')->get();
                     $totalAllContacts = \App\Models\Contact::count();
-                    $isLeadsActive = request()->routeIs('admin.leads.*');
-                    $currentProjId = request('project_id');
+                    $isLeadsActive = request()->routeIs('admin.leads.*') || request()->routeIs('admin.reports.user-leads');
                 @endphp
                 <div x-data="{ leadsOpen: {{ $isLeadsActive ? 'true' : 'false' }} }">
                     <button @click="leadsOpen = !leadsOpen" 
@@ -153,13 +151,12 @@
                         </div>
                     </button>
                     <div x-show="leadsOpen" x-cloak class="mt-1 pl-7 pr-2 space-y-1">
-                        <!-- Project-wise Lead Cards -->
+                        <!-- Project-wise Leads -->
                         <a href="{{ route('admin.leads.index') }}" 
                            class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors {{ request()->routeIs('admin.leads.index') && request('view') !== 'table' && !request('project_id') && !request('user_id') ? 'text-brand-700 bg-brand-50 border-l-2 border-brand-600 pl-2.5 font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             <span class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-city text-[10px] text-brand-600"></i> Project-wise Cards
+                                <i class="fa-solid fa-city text-[10px] text-brand-600"></i> Project-wise Leads
                             </span>
-                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-brand-100 text-brand-700 font-bold uppercase">Cards</span>
                         </a>
 
                         <!-- All Inquiries Table -->
@@ -173,38 +170,13 @@
                             </span>
                         </a>
 
-                        <!-- User-wise Lead Cards -->
+                        <!-- User-wise Leads -->
                         <a href="{{ route('admin.reports.user-leads') }}" 
                            class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors {{ request()->routeIs('admin.reports.user-leads') ? 'text-purple-700 bg-purple-50 border-l-2 border-purple-600 pl-2.5 font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             <span class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-address-card text-[10px] text-purple-600"></i> User-wise Cards
+                                <i class="fa-solid fa-users text-[10px] text-purple-600"></i> User-wise Leads
                             </span>
-                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-100 text-purple-700 font-bold uppercase">Cards</span>
                         </a>
-
-                        <!-- Project Wise Submenu Header -->
-                        <div class="pt-2 pb-1 px-3 flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                            <span>By Project</span>
-                            <i class="fa-solid fa-city text-[9px]"></i>
-                        </div>
-
-                        <!-- Project Specific Submenu Links -->
-                        @foreach($sidebarProjects as $sp)
-                            @php
-                                $isThisProj = request()->routeIs('admin.leads.index') && (string)$currentProjId === (string)$sp->id;
-                            @endphp
-                            <a href="{{ route('admin.leads.index', ['project_id' => $sp->id]) }}" 
-                               class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-medium transition-colors {{ $isThisProj ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5 shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}"
-                               title="{{ $sp->name }} ({{ $sp->contacts_count }} leads)">
-                                <span class="truncate max-w-[130px] flex items-center gap-1.5">
-                                    <i class="fa-solid fa-building text-[10px] {{ $isThisProj ? 'text-brand-600' : 'text-slate-400' }}"></i>
-                                    {{ $sp->name }}
-                                </span>
-                                <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded-full {{ $sp->contacts_count > 0 ? ($isThisProj ? 'bg-brand-600 text-white' : 'bg-emerald-50 text-emerald-700 border border-emerald-200') : 'bg-slate-100 text-slate-400' }}">
-                                    {{ $sp->contacts_count }}
-                                </span>
-                            </a>
-                        @endforeach
                     </div>
                 </div>
 
@@ -320,7 +292,7 @@
                             • Leads & Pipeline Funnel
                         </a>
                         <a href="{{ route('admin.reports.user-leads') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.user-leads') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
-                            • User-wise Leads Cards
+                            • User-wise Leads
                         </a>
                         <a href="{{ route('admin.reports.agent-performance') }}" class="block px-3 py-1.5 rounded-lg text-xs {{ request()->routeIs('admin.reports.agent-performance') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • Agent & Staff Performance
