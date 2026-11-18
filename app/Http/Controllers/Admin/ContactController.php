@@ -541,10 +541,11 @@ class ContactController extends Controller
             'status' => $request->status,
         ]);
 
-        // Update lead's main status and remark
+        // Update lead's main status, remark, and schedule date
         $lead->update([
             'status' => $request->status,
             'remark' => $request->remark,
+            'date' => $request->date,
         ]);
 
         return back()->with('success', 'Call / visit activity logged successfully.');

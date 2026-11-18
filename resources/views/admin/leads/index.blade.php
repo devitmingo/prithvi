@@ -12,6 +12,7 @@
     callModalOpen: false, 
     callLeadId: null, 
     callLeadName: '',
+    modalStatus: 'follow_up',
     pSearch: '',
     pFilter: 'all'
 }">
@@ -616,13 +617,13 @@
                 <table class="w-full text-left text-xs">
                     <thead>
                         <tr class="bg-slate-50/90 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200/80">
-                            <th class="py-3.5 px-4">Customer Details & Phone</th>
-                            <th class="py-3.5 px-4">Project</th>
-                            <th class="py-3.5 px-4">Assigned Executive</th>
-                            <th class="py-3.5 px-4">Pipeline Status</th>
-                            <th class="py-3.5 px-4">Latest Remark</th>
-                            <th class="py-3.5 px-4">Date & Time</th>
-                            <th class="py-3.5 px-4 text-right">Actions</th>
+                            <th class="py-3.5 px-4 whitespace-nowrap">Customer Details & Phone</th>
+                            <th class="py-3.5 px-3 whitespace-nowrap">Project</th>
+                            <th class="py-3.5 px-3 whitespace-nowrap">Assigned Executive</th>
+                            <th class="py-3.5 px-3 whitespace-nowrap">Pipeline Status</th>
+                            <th class="py-3.5 px-3 w-56 max-w-[220px]">Latest Remark</th>
+                            <th class="py-3.5 px-3 whitespace-nowrap">Schedule / Next Action</th>
+                            <th class="py-3.5 px-4 text-right whitespace-nowrap">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -630,52 +631,93 @@
                             @php
                                 $phoneClean = preg_replace('/[^0-9]/', '', $lead->mobile);
                                 $callCount = $callCountsByPhone[$lead->mobile] ?? $lead->contactCallHistories->count();
+
+                                // Determine Schedule Type and Indicators (Next Follow-up, Scheduled Visit, etc.)
+                                $rawDate = $lead->getRawOriginal('date');
+                                $today = now()->toDateString();
+
+                                $scheduleType = 'Inquiry Date';
+                                $scheduleBadgeClass = 'bg-slate-100 text-slate-700 border-slate-200';
+                                $scheduleIcon = 'fa-calendar';
+
+                                if ($lead->status === 'follow_up') {
+                                    $scheduleType = 'Next Follow-up';
+                                    $scheduleBadgeClass = 'bg-amber-50 text-amber-800 border-amber-300';
+                                    $scheduleIcon = 'fa-clock-rotate-left';
+                                } elseif ($lead->status === 'visit_scheduled') {
+                                    $scheduleType = 'Scheduled Visit';
+                                    $scheduleBadgeClass = 'bg-indigo-50 text-indigo-800 border-indigo-300';
+                                    $scheduleIcon = 'fa-calendar-check';
+                                } elseif ($lead->status === 'site_visit_done') {
+                                    $scheduleType = 'Visited On';
+                                    $scheduleBadgeClass = 'bg-blue-50 text-blue-800 border-blue-300';
+                                    $scheduleIcon = 'fa-location-dot';
+                                } elseif ($lead->status === 'call_later') {
+                                    $scheduleType = 'Call Later Date';
+                                    $scheduleBadgeClass = 'bg-purple-50 text-purple-800 border-purple-300';
+                                    $scheduleIcon = 'fa-calendar-day';
+                                } elseif ($lead->status === 'booking_done') {
+                                    $scheduleType = 'Booked On';
+                                    $scheduleBadgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-300';
+                                    $scheduleIcon = 'fa-circle-check';
+                                }
+
+                                $timeStatus = null;
+                                if ($rawDate && in_array($lead->status, ['follow_up', 'call_later', 'visit_scheduled'])) {
+                                    if ($rawDate < $today) {
+                                        $timeStatus = 'overdue';
+                                    } elseif ($rawDate === $today) {
+                                        $timeStatus = 'today';
+                                    } else {
+                                        $timeStatus = 'upcoming';
+                                    }
+                                }
                             @endphp
                             <tr class="hover:bg-slate-50/80 transition-colors">
                                 
-                                <!-- Customer Details & Call Frequency -->
+                                <!-- Customer Details & Phone (with click-to-call, WhatsApp & Call Frequency) -->
                                 <td class="py-3.5 px-4">
-                                    <a href="{{ route('admin.leads.show', $lead->id) }}" class="font-bold text-slate-900 hover:text-blue-600 text-sm block">
+                                    <a href="{{ route('admin.leads.show', $lead->id) }}" class="font-extrabold text-slate-900 hover:text-blue-600 text-xs block leading-tight">
                                         {{ $lead->name }}
                                     </a>
                                     
                                     <div class="flex flex-wrap items-center gap-1.5 mt-1">
                                         <!-- Click-to-call link -->
-                                        <a href="tel:{{ $lead->mobile }}" class="text-xs text-slate-700 font-semibold hover:text-blue-600 flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-md">
-                                            <i class="fa-solid fa-phone text-[10px] text-emerald-600"></i>
+                                        <a href="tel:{{ $lead->mobile }}" class="text-[11px] text-slate-700 font-semibold hover:text-blue-600 flex items-center gap-1 bg-slate-100 hover:bg-slate-200 px-2 py-0.5 rounded-md transition">
+                                            <i class="fa-solid fa-phone text-[9px] text-emerald-600"></i>
                                             <span>{{ $lead->mobile }}</span>
                                         </a>
 
                                         <!-- WhatsApp quick icon -->
-                                        <a href="https://wa.me/91{{ $phoneClean }}" target="_blank" class="w-5 h-5 rounded-md bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white flex items-center justify-center transition" title="Chat on WhatsApp">
+                                        <a href="https://wa.me/91{{ $phoneClean }}" target="_blank" class="w-5 h-5 rounded-md bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white flex items-center justify-center transition shadow-2xs" title="Chat on WhatsApp">
                                             <i class="fa-brands fa-whatsapp text-xs"></i>
                                         </a>
 
                                         <!-- Call Frequency Badge -->
                                         @if($callCount > 1)
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 shadow-2xs" title="Same number has been called {{ $callCount }} times across system">
+                                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 shadow-2xs" title="Called {{ $callCount }} times across system">
                                                 <i class="fa-solid fa-phone-volume text-[8px] text-amber-600 animate-pulse"></i>
-                                                <span>Called {{ $callCount }} times</span>
+                                                <span>{{ $callCount }} calls</span>
                                             </span>
                                         @elseif($callCount == 1)
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
                                                 <i class="fa-solid fa-phone text-[8px] text-blue-500"></i>
                                                 <span>1 call</span>
                                             </span>
                                         @else
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-400">
-                                                No calls yet
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-400">
+                                                0 calls
                                             </span>
                                         @endif
                                     </div>
                                 </td>
 
                                 <!-- Project -->
-                                <td class="py-3.5 px-4 font-semibold text-slate-800">
+                                <td class="py-3.5 px-3 font-semibold text-slate-800 whitespace-nowrap">
                                     @if($lead->project)
                                         <a href="{{ route('admin.leads.index', ['project_id' => $lead->project_id, 'view' => 'table']) }}" class="hover:text-blue-600 flex items-center gap-1.5" title="Filter leads for {{ $lead->project->name }}">
-                                            <i class="fa-solid fa-building text-slate-400 text-xs"></i>
-                                            <span>{{ $lead->project->name }}</span>
+                                            <i class="fa-solid fa-building text-brand-600 text-xs"></i>
+                                            <span class="font-bold">{{ $lead->project->name }}</span>
                                         </a>
                                     @else
                                         <span class="text-slate-400">General Inquiry</span>
@@ -683,9 +725,9 @@
                                 </td>
 
                                 <!-- Assigned Executive -->
-                                <td class="py-3.5 px-4">
+                                <td class="py-3.5 px-3 whitespace-nowrap">
                                     @if($lead->user)
-                                        <a href="{{ route('admin.leads.index', ['user_id' => $lead->user->id, 'view' => 'table']) }}" class="font-semibold text-slate-800 hover:text-blue-600 block">
+                                        <a href="{{ route('admin.leads.index', ['user_id' => $lead->user->id, 'view' => 'table']) }}" class="font-bold text-slate-800 hover:text-blue-600 block leading-tight">
                                             {{ $lead->user->name }}
                                         </a>
                                         <span class="text-[10px] text-slate-400">
@@ -697,56 +739,75 @@
                                 </td>
 
                                 <!-- Status Badge -->
-                                <td class="py-3.5 px-4">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold
-                                        {{ $lead->status === 'booking_done' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : '' }}
-                                        {{ $lead->status === 'site_visit_done' ? 'bg-blue-100 text-blue-800 border border-blue-300' : '' }}
-                                        {{ $lead->status === 'visit_scheduled' ? 'bg-indigo-100 text-indigo-800 border border-indigo-300' : '' }}
-                                        {{ $lead->status === 'follow_up' ? 'bg-amber-100 text-amber-800 border border-amber-300' : '' }}
-                                        {{ in_array($lead->status, ['call_later', 'call_not_connecting']) ? 'bg-slate-100 text-slate-700 border border-slate-300' : '' }}
-                                        {{ in_array($lead->status, ['interested', 'not_interested']) ? 'bg-purple-100 text-purple-800 border border-purple-300' : '' }}">
+                                <td class="py-3.5 px-3 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold border shadow-2xs
+                                        {{ $lead->status === 'booking_done' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : '' }}
+                                        {{ $lead->status === 'site_visit_done' ? 'bg-blue-100 text-blue-800 border-blue-300' : '' }}
+                                        {{ $lead->status === 'visit_scheduled' ? 'bg-indigo-100 text-indigo-800 border-indigo-300' : '' }}
+                                        {{ $lead->status === 'follow_up' ? 'bg-amber-100 text-amber-800 border-amber-300' : '' }}
+                                        {{ in_array($lead->status, ['call_later', 'call_not_connecting']) ? 'bg-slate-100 text-slate-700 border-slate-300' : '' }}
+                                        {{ in_array($lead->status, ['interested', 'not_interested']) ? 'bg-purple-100 text-purple-800 border-purple-300' : '' }}">
                                         {{ ucfirst(str_replace('_', ' ', $lead->status)) }}
                                     </span>
                                 </td>
 
-                                <!-- Latest Remark -->
-                                <td class="py-3.5 px-4 max-w-xs truncate text-slate-600" title="{{ $lead->remark }}">
-                                    {{ $lead->remark ?? '—' }}
+                                <!-- Latest Remark (Compact & 2-line clamped) -->
+                                <td class="py-3.5 px-3 w-56 max-w-[220px]">
+                                    @if($lead->remark)
+                                        <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed cursor-help" title="{{ $lead->remark }}">
+                                            {{ $lead->remark }}
+                                        </p>
+                                    @else
+                                        <span class="text-slate-300 italic text-[11px]">No remarks logged</span>
+                                    @endif
                                 </td>
 
-                                <!-- Date & Time -->
-                                <td class="py-3.5 px-4 text-slate-500 text-[11px]">
-                                    <span class="block font-medium text-slate-700">{{ $lead->date }}</span>
-                                    <span class="text-slate-400">{{ $lead->time }}</span>
+                                <!-- Schedule / Next Action (Shows whether it's Next Follow-up, Scheduled Visit, etc.) -->
+                                <td class="py-3.5 px-3 whitespace-nowrap">
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border {{ $scheduleBadgeClass }}">
+                                                <i class="fa-solid {{ $scheduleIcon }} text-[9px]"></i>
+                                                <span>{{ $scheduleType }}</span>
+                                            </span>
+
+                                            @if($timeStatus === 'overdue')
+                                                <span class="inline-flex items-center gap-0.5 text-[9px] font-extrabold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
+                                                    <i class="fa-solid fa-triangle-exclamation text-[8px] animate-pulse"></i> Overdue
+                                                </span>
+                                            @elseif($timeStatus === 'today')
+                                                <span class="inline-flex items-center gap-0.5 text-[9px] font-black text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300">
+                                                    <i class="fa-solid fa-bell text-[8px]"></i> Due Today
+                                                </span>
+                                            @elseif($timeStatus === 'upcoming')
+                                                <span class="inline-flex items-center gap-0.5 text-[9px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                                                    <i class="fa-regular fa-clock text-[8px]"></i> Scheduled
+                                                </span>
+                                            @endif
+                                        </div>
+
+                                        <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-800">
+                                            <span>{{ $lead->date }}</span>
+                                            @if($lead->time)
+                                                <span class="text-[10px] text-slate-400 font-normal">({{ $lead->time }})</span>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </td>
 
-                                <!-- High-Visibility Interactive Actions Column -->
-                                <td class="py-3.5 px-4 text-right">
-                                    <div class="inline-flex items-center gap-1.5 justify-end">
+                                <!-- Compact Reduced Actions Column -->
+                                <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                                    <div class="inline-flex items-center gap-1 justify-end shrink-0">
                                         
-                                        <!-- Direct Phone Call Button -->
-                                        <a href="tel:{{ $lead->mobile }}" 
-                                           class="w-7 h-7 rounded-lg bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white flex items-center justify-center transition shadow-2xs" 
-                                           title="Call {{ $lead->mobile }}">
-                                            <i class="fa-solid fa-phone text-xs"></i>
-                                        </a>
-
-                                        <!-- Quick WhatsApp Button -->
-                                        <a href="https://wa.me/91{{ $phoneClean }}" target="_blank"
-                                           class="w-7 h-7 rounded-lg bg-green-50 hover:bg-green-600 text-green-600 hover:text-white flex items-center justify-center transition shadow-2xs" 
-                                           title="Chat on WhatsApp">
-                                            <i class="fa-brands fa-whatsapp text-xs"></i>
-                                        </a>
-
-                                        <!-- Quick Log Call Modal Trigger -->
+                                        <!-- Quick Log Call / Activity -->
                                         <button type="button" 
-                                                @click="callLeadId = {{ $lead->id }}; callLeadName = '{{ addslashes($lead->name) }}'; callModalOpen = true"
+                                                @click="callLeadId = {{ $lead->id }}; callLeadName = '{{ addslashes($lead->name) }}'; modalStatus = '{{ $lead->status }}'; callModalOpen = true"
                                                 class="w-7 h-7 rounded-lg bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white flex items-center justify-center transition shadow-2xs" 
-                                                title="Log Interaction / Call">
+                                                title="Log Call / Interaction">
                                             <i class="fa-solid fa-phone-volume text-xs"></i>
                                         </button>
 
-                                        <!-- Reassign Trigger -->
+                                        <!-- Reassign Executive -->
                                         <button type="button" 
                                                 @click="assignLeadId = {{ $lead->id }}; assignLeadName = '{{ addslashes($lead->name) }}'; assignModalOpen = true"
                                                 class="w-7 h-7 rounded-lg bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white flex items-center justify-center transition shadow-2xs" 
@@ -754,21 +815,21 @@
                                             <i class="fa-solid fa-user-gear text-xs"></i>
                                         </button>
 
-                                        <!-- View Details -->
+                                        <!-- View Details & Timeline -->
                                         <a href="{{ route('admin.leads.show', $lead->id) }}" 
                                            class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-800 text-slate-600 hover:text-white flex items-center justify-center transition shadow-2xs" 
                                            title="View Full Profile & Timeline">
                                             <i class="fa-solid fa-eye text-xs"></i>
                                         </a>
 
-                                        <!-- Edit -->
+                                        <!-- Edit Lead -->
                                         <a href="{{ route('admin.leads.edit', $lead->id) }}" 
                                            class="w-7 h-7 rounded-lg bg-amber-50 hover:bg-amber-500 text-amber-600 hover:text-white flex items-center justify-center transition shadow-2xs" 
                                            title="Edit Lead">
                                             <i class="fa-solid fa-pen-to-square text-xs"></i>
                                         </a>
 
-                                        <!-- Delete (Superadmin) -->
+                                        <!-- Delete Lead (Superadmin) -->
                                         @if(auth()->user()?->isSuperAdmin())
                                         <form action="{{ route('admin.leads.destroy', $lead->id) }}" method="POST" class="inline" onsubmit="return confirm('Delete this lead and all interaction history?');">
                                             @csrf
@@ -832,7 +893,7 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">New Pipeline Status <span class="text-rose-500">*</span></label>
-                    <select name="status" required class="w-full text-xs rounded-xl border border-slate-200 p-2.5 bg-white focus:ring-2 focus:ring-blue-500">
+                    <select name="status" x-model="modalStatus" required class="w-full text-xs rounded-xl border border-slate-200 p-2.5 bg-white focus:ring-2 focus:ring-blue-500">
                         <option value="follow_up">Follow Up</option>
                         <option value="site_visit_done">Site Visit Completed</option>
                         <option value="booking_done">Booking Confirmed</option>
@@ -845,8 +906,14 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Date of Activity <span class="text-rose-500">*</span></label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                        <span x-text="modalStatus === 'follow_up' ? 'Next Follow-up Date' : (modalStatus === 'visit_scheduled' ? 'Scheduled Visit Date' : (modalStatus === 'call_later' ? 'Call Later Date' : (modalStatus === 'site_visit_done' ? 'Visit Completed Date' : (modalStatus === 'booking_done' ? 'Booking Date' : 'Date of Activity'))))"></span>
+                        <span class="text-rose-500">*</span>
+                    </label>
                     <input type="date" name="date" value="{{ date('Y-m-d') }}" required class="w-full text-xs rounded-xl border border-slate-200 p-2.5">
+                    <p class="text-[10px] text-slate-400 mt-1" x-show="['follow_up', 'visit_scheduled', 'call_later'].includes(modalStatus)">
+                        This date will be saved as the scheduled action date on the lead.
+                    </p>
                 </div>
 
                 <div>
