@@ -7,18 +7,83 @@
 @section('content')
 <div class="space-y-6" x-data="{ imgModalOpen: false, modalImgSrc: '', modalImgTitle: '' }">
 
+    <!-- KPI Summary Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- Active Staff Present in Period -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+            <div class="w-11 h-11 rounded-xl bg-brand-50 border border-brand-100 text-brand-600 flex items-center justify-center text-lg font-bold">
+                <i class="fa-solid fa-users-viewfinder"></i>
+            </div>
+            <div>
+                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Staff In Range</p>
+                <div class="flex items-baseline gap-1.5">
+                    <span class="text-xl font-extrabold text-slate-900">{{ $attendances->total() }}</span>
+                    <span class="text-[11px] text-slate-500 font-medium">Distinct staff</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today Punches -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+            <div class="w-11 h-11 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center text-lg font-bold">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+            <div>
+                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Today Punches</p>
+                <div class="flex items-baseline gap-1.5">
+                    <span class="text-xl font-extrabold text-emerald-600">{{ $todayPunches }}</span>
+                    <span class="text-[11px] text-slate-500 font-medium">Present today</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Month Punches -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+            <div class="w-11 h-11 rounded-xl bg-purple-50 border border-purple-100 text-purple-600 flex items-center justify-center text-lg font-bold">
+                <i class="fa-solid fa-calendar-days"></i>
+            </div>
+            <div>
+                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">{{ \Carbon\Carbon::now()->format('M Y') }} Logs</p>
+                <div class="flex items-baseline gap-1.5">
+                    <span class="text-xl font-extrabold text-purple-600">{{ $currentMonthPunches }}</span>
+                    <span class="text-[11px] text-slate-500 font-medium">Punches this mo.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Active Staff -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-2xs flex items-center gap-3.5">
+            <div class="w-11 h-11 rounded-xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center text-lg font-bold">
+                <i class="fa-solid fa-id-card-clip"></i>
+            </div>
+            <div>
+                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Active Staff</p>
+                <div class="flex items-baseline gap-1.5">
+                    <span class="text-xl font-extrabold text-blue-600">{{ $totalActiveStaff }}</span>
+                    <span class="text-[11px] text-slate-500 font-medium">Enrolled team</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Top Action & Filter Bar -->
     <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         
         <form method="GET" action="{{ route('admin.attendances.index') }}" class="flex-1 flex flex-wrap items-center gap-2">
             
-            <!-- Specific Date -->
-            <input type="date" name="date" value="{{ request('date') }}" 
-                   class="text-xs rounded-xl border border-slate-200 p-2 bg-white focus:ring-2 focus:ring-brand-500">
+            <!-- From Date -->
+            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-brand-500">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">From</span>
+                <input type="date" name="date_from" value="{{ $dateFrom }}" 
+                       class="text-xs border-0 bg-transparent p-0 text-slate-800 font-semibold focus:ring-0">
+            </div>
 
-            <!-- Month Filter -->
-            <input type="month" name="month" value="{{ request('month') }}"
-                   class="text-xs rounded-xl border border-slate-200 p-2 bg-white focus:ring-2 focus:ring-brand-500">
+            <!-- To Date -->
+            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-brand-500">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">To</span>
+                <input type="date" name="date_to" value="{{ $dateTo }}" 
+                       class="text-xs border-0 bg-transparent p-0 text-slate-800 font-semibold focus:ring-0">
+            </div>
 
             <!-- Staff User Filter -->
             <select name="user_id" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500">
@@ -38,11 +103,28 @@
                 </select>
             @endif
 
-            <button type="submit" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-slate-800 transition-colors">
+            <button type="submit" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-slate-800 transition-colors shadow-2xs">
                 Filter
             </button>
-            @if(request()->hasAny(['date', 'month', 'user_id', 'agent_id']))
-                <a href="{{ route('admin.attendances.index') }}" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">
+            
+            <!-- Quick Date Presets -->
+            <div class="flex items-center gap-1 border-l border-slate-200 pl-2">
+                <a href="{{ route('admin.attendances.index', ['date_from' => $today, 'date_to' => $today]) }}" 
+                   class="px-2.5 py-1.5 rounded-lg text-xs font-medium {{ ($dateFrom == $today && $dateTo == $today) ? 'bg-brand-50 text-brand-700 font-bold border border-brand-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-600' }}">
+                   Today
+                </a>
+                <a href="{{ route('admin.attendances.index', ['date_from' => \Carbon\Carbon::now()->startOfMonth()->toDateString(), 'date_to' => $today]) }}" 
+                   class="px-2.5 py-1.5 rounded-lg text-xs font-medium {{ ($dateFrom == \Carbon\Carbon::now()->startOfMonth()->toDateString() && $dateTo == $today) ? 'bg-brand-50 text-brand-700 font-bold border border-brand-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-600' }}">
+                   This Month
+                </a>
+                <a href="{{ route('admin.attendances.index', ['date_from' => '', 'date_to' => '']) }}" 
+                   class="px-2.5 py-1.5 rounded-lg text-xs font-medium {{ (empty($dateFrom) && empty($dateTo)) ? 'bg-brand-50 text-brand-700 font-bold border border-brand-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-600' }}">
+                   All Dates
+                </a>
+            </div>
+
+            @if(request()->hasAny(['date_from', 'date_to', 'date', 'month', 'user_id', 'agent_id']))
+                <a href="{{ route('admin.attendances.index') }}" title="Reset Filters" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-200">
                     <i class="fa-solid fa-rotate-left"></i>
                 </a>
             @endif
@@ -75,7 +157,8 @@
                         <th class="py-3.5 px-4">Punch Selfie</th>
                         <th class="py-3.5 px-4">Staff Member</th>
                         <th class="py-3.5 px-4">Designation / Agency</th>
-                        <th class="py-3.5 px-4">Date</th>
+                        <th class="py-3.5 px-4 text-center">Monthly Days ({{ \Carbon\Carbon::now()->format('M Y') }})</th>
+                        <th class="py-3.5 px-4">Latest Punch Date</th>
                         <th class="py-3.5 px-4">Time</th>
                         <th class="py-3.5 px-4">Location / GPS</th>
                         <th class="py-3.5 px-4 text-right">Action</th>
@@ -94,7 +177,7 @@
                                          onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($att->user->name ?? 'User') }}&color=059669&background=d1fae5';">
                                 @else
                                     <div class="w-11 h-11 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center font-bold text-xs border border-slate-200">
-                                        <i class="fa-solid fa-camera"></i>
+                                         <i class="fa-solid fa-camera"></i>
                                     </div>
                                 @endif
                             </td>
@@ -125,6 +208,18 @@
                                         {{ $att->user->company_name ?? 'Direct Agency' }}
                                     </span>
                                 @endif
+                            </td>
+
+                            <!-- Monthly Days (Current Month) -->
+                            <td class="py-3 px-4 text-center">
+                                @php
+                                    $daysCount = $monthlyDaysByUser[$att->user_id] ?? 0;
+                                @endphp
+                                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold {{ $daysCount > 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80' : 'bg-slate-100 text-slate-500 border border-slate-200' }}">
+                                    <i class="fa-solid fa-calendar-check {{ $daysCount > 0 ? 'text-emerald-500' : 'text-slate-400' }}"></i>
+                                    <span>{{ $daysCount }} {{ \Illuminate\Support\Str::plural('Day', $daysCount) }}</span>
+                                </div>
+                                <span class="block text-[10px] text-slate-400 mt-0.5 font-medium">{{ \Carbon\Carbon::now()->format('F Y') }}</span>
                             </td>
 
                             <!-- Date -->
@@ -170,7 +265,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="py-8 text-center text-slate-400">
+                            <td colspan="8" class="py-8 text-center text-slate-400">
                                 <i class="fa-solid fa-fingerprint text-2xl text-slate-300 mb-2 block"></i>
                                 No attendance punches found for this period.
                             </td>

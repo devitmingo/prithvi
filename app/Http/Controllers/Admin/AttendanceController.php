@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Models\Attendance;
 use App\Models\User;
 use Carbon\Carbon;
@@ -13,55 +14,125 @@ class AttendanceController extends Controller
 {
     /**
      * Display a listing of attendance punches.
+     * Default from_date and to_date to current date.
+     * Each staff member appears 1 time with total days for current month.
      */
     public function index(Request $request)
     {
         $currentUser = Auth::user();
         $isSuperAdmin = $currentUser->isSuperAdmin();
 
-        $query = Attendance::with(['user.designation', 'user.company', 'user.city']);
+        $today = Carbon::today()->toDateString();
+
+        // Default from_date and to_date to current date
+        if ($request->has('date_from') || $request->has('date_to') || $request->has('date')) {
+            $dateFrom = $request->get('date_from', $request->get('date'));
+            $dateTo = $request->get('date_to', $request->get('date'));
+        } else {
+            // First page load defaults to today
+            $dateFrom = $today;
+            $dateTo = $today;
+        }
+
+        $teamUserIds = [];
+        $agentTeamIds = [];
 
         if (!$isSuperAdmin) {
             $teamUserIds = User::where('id', $currentUser->id)
                 ->orWhere('company_id', $currentUser->id)
                 ->pluck('id')->toArray();
-            $query->whereIn('user_id', $teamUserIds);
         } else {
             if ($request->filled('agent_id')) {
                 $agentTeamIds = User::where('id', $request->agent_id)
                     ->orWhere('company_id', $request->agent_id)
                     ->pluck('id')->toArray();
-                $query->whereIn('user_id', $agentTeamIds);
             }
         }
 
-        // Filters
-        if ($request->filled('date')) {
-            $query->where('date', $request->date);
+        // Subquery to get latest punch ID for each user within the filtered date range
+        // Ensures each staff member appears only 1 time in the listing
+        $subQuery = Attendance::query();
+
+        if (!$isSuperAdmin) {
+            $subQuery->whereIn('user_id', $teamUserIds);
+        } elseif ($request->filled('agent_id')) {
+            $subQuery->whereIn('user_id', $agentTeamIds);
         }
 
         if ($request->filled('user_id')) {
-            $query->where('user_id', $request->user_id);
+            $subQuery->where('user_id', $request->user_id);
+        }
+
+        if (!empty($dateFrom)) {
+            $subQuery->whereDate('date', '>=', $dateFrom);
+        }
+
+        if (!empty($dateTo)) {
+            $subQuery->whereDate('date', '<=', $dateTo);
         }
 
         if ($request->filled('month')) {
             $parts = explode('-', $request->month);
             if (count($parts) === 2) {
-                $query->whereYear('date', $parts[0])->whereMonth('date', $parts[1]);
+                $subQuery->whereYear('date', $parts[0])->whereMonth('date', $parts[1]);
             }
         }
 
-        $attendances = $query->orderBy('date', 'desc')->orderBy('time', 'desc')->paginate(15)->withQueryString();
+        $latestIds = $subQuery->select(DB::raw('max(id) as id'))
+            ->groupBy('user_id')
+            ->pluck('id');
+
+        $attendances = Attendance::with(['user.designation', 'user.company', 'user.city'])
+            ->whereIn('id', $latestIds)
+            ->orderBy('date', 'desc')
+            ->orderBy('time', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
+        // Calculate total days for each user in the CURRENT MONTH
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+
+        $monthlyDaysQuery = Attendance::select('user_id', DB::raw('count(distinct date) as total_days'))
+            ->whereYear('date', $currentYear)
+            ->whereMonth('date', $currentMonth);
+
+        if (!$isSuperAdmin) {
+            $monthlyDaysQuery->whereIn('user_id', $teamUserIds);
+        } elseif ($request->filled('agent_id')) {
+            $monthlyDaysQuery->whereIn('user_id', $agentTeamIds);
+        }
+
+        $monthlyDaysByUser = $monthlyDaysQuery->groupBy('user_id')
+            ->pluck('total_days', 'user_id')
+            ->toArray();
 
         // Calculate summary counters
-        $today = Carbon::today()->toDateString();
         $todayCountQuery = Attendance::where('date', $today);
         if (!$isSuperAdmin) {
             $todayCountQuery->whereIn('user_id', $teamUserIds);
         } elseif ($request->filled('agent_id')) {
             $todayCountQuery->whereIn('user_id', $agentTeamIds);
         }
-        $todayPunches = $todayCountQuery->count();
+        $todayPunches = $todayCountQuery->distinct('user_id')->count('user_id');
+
+        // Current month total unique active punches
+        $monthCountQuery = Attendance::whereYear('date', $currentYear)->whereMonth('date', $currentMonth);
+        if (!$isSuperAdmin) {
+            $monthCountQuery->whereIn('user_id', $teamUserIds);
+        } elseif ($request->filled('agent_id')) {
+            $monthCountQuery->whereIn('user_id', $agentTeamIds);
+        }
+        $currentMonthPunches = $monthCountQuery->count();
+
+        // Total active staff members
+        $totalUsersQuery = User::whereIn('role', ['Agent', 'Sub Agent'])->where('status', 1);
+        if (!$isSuperAdmin) {
+            $totalUsersQuery->whereIn('id', $teamUserIds);
+        } elseif ($request->filled('agent_id')) {
+            $totalUsersQuery->whereIn('id', $agentTeamIds);
+        }
+        $totalActiveStaff = $totalUsersQuery->count();
 
         if ($isSuperAdmin) {
             $users = User::whereIn('role', ['Agent', 'Sub Agent'])->where('status', 1)->orderBy('name')->get();
@@ -73,7 +144,19 @@ class AttendanceController extends Controller
             $agents = collect();
         }
 
-        return view('admin.attendances.index', compact('attendances', 'todayPunches', 'users', 'agents', 'isSuperAdmin'));
+        return view('admin.attendances.index', compact(
+            'attendances', 
+            'todayPunches', 
+            'currentMonthPunches',
+            'totalActiveStaff',
+            'monthlyDaysByUser', 
+            'dateFrom', 
+            'dateTo', 
+            'today',
+            'users', 
+            'agents', 
+            'isSuperAdmin'
+        ));
     }
 
     /**
