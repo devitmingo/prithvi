@@ -14,7 +14,8 @@
     callLeadName: '',
     modalStatus: 'follow_up',
     pSearch: '',
-    pFilter: 'all'
+    pFilter: 'all',
+    tableSearch: '{{ addslashes(request('search', '')) }}'
 }">
 
     <!-- Active Project Specific Filter Header Banner -->
@@ -535,16 +536,16 @@
             <form method="GET" action="{{ route('admin.leads.index') }}" class="flex-1 flex flex-wrap items-center gap-2.5">
                 <input type="hidden" name="view" value="table">
 
-                <!-- Search -->
+                <!-- Search (Instant Filter while typing) -->
                 <div class="relative flex-1 min-w-[200px]">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" name="search" value="{{ request('search') }}" 
+                    <input type="text" name="search" x-model="tableSearch" value="{{ request('search') }}" 
                            placeholder="Search customer, phone, remark..."
                            class="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 </div>
 
                 <!-- Project Filter -->
-                <select name="project_id" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 font-medium">
+                <select name="project_id" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 font-medium">
                     <option value="">All Projects</option>
                     @foreach($projects as $proj)
                         <option value="{{ $proj->id }}" {{ request('project_id') == $proj->id ? 'selected' : '' }}>{{ $proj->name }}</option>
@@ -553,7 +554,7 @@
 
                 <!-- Executive / User Filter -->
                 @if(isset($assignableUsers) && $assignableUsers->count() > 0)
-                    <select name="user_id" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 font-medium">
+                    <select name="user_id" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 font-medium">
                         <option value="">All Executives</option>
                         @foreach($assignableUsers as $u)
                             <option value="{{ $u->id }}" {{ request('user_id') == $u->id ? 'selected' : '' }}>
@@ -564,7 +565,7 @@
                 @endif
 
                 <!-- Status Filter -->
-                <select name="status" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 font-medium">
+                <select name="status" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 font-medium">
                     <option value="">All Statuses</option>
                     <option value="active_leads" {{ request('status') === 'active_leads' ? 'selected' : '' }}>⭐ Active Leads (Engaged)</option>
                     <option value="follow_up" {{ request('status') === 'follow_up' ? 'selected' : '' }}>Follow Up</option>
@@ -579,7 +580,7 @@
 
                 <!-- Leader Filter for Superadmin -->
                 @if($isSuperAdmin && $agents->count() > 0)
-                    <select name="agent_id" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500">
+                    <select name="agent_id" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500">
                         <option value="">All Leaders</option>
                         @foreach($agents as $ag)
                             <option value="{{ $ag->id }}" {{ request('agent_id') == $ag->id ? 'selected' : '' }}>{{ $ag->name }}</option>
@@ -672,8 +673,9 @@
                                         $timeStatus = 'upcoming';
                                     }
                                 }
+                                $rowSearchData = strtolower($lead->name . ' ' . $lead->mobile . ' ' . ($lead->project?->name ?? '') . ' ' . ($lead->user?->name ?? '') . ' ' . ($lead->remark ?? ''));
                             @endphp
-                            <tr class="hover:bg-slate-50/80 transition-colors">
+                            <tr x-show="!tableSearch || '{{ addslashes($rowSearchData) }}'.includes(tableSearch.toLowerCase().trim())" class="hover:bg-slate-50/80 transition-colors">
                                 
                                 <!-- Customer Details & Phone (with click-to-call, WhatsApp & Call Frequency) -->
                                 <td class="py-3.5 px-4">

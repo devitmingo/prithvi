@@ -5,7 +5,7 @@
 @section('page-subtitle', 'Active leads (follow ups, visits, call later), call attempts, unreached calls, and one-click list drill-down')
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-6" x-data="{ searchKeyword: '{{ addslashes(request('search', '')) }}' }">
 
     <!-- Top Action & Filter Bar -->
     <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs space-y-4">
@@ -68,16 +68,16 @@
                 <input type="hidden" name="filter_leads" value="{{ request('filter_leads') }}">
             @endif
 
-            <!-- Search Executive -->
+            <!-- Search Executive (Instant Real-time Filter while typing) -->
             <div class="relative flex-1 min-w-[200px]">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" name="search" value="{{ request('search') }}" 
+                <input type="text" name="search" x-model="searchKeyword" value="{{ request('search') }}" 
                        placeholder="Search executive name, mobile, leader..."
                        class="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent">
             </div>
 
             <!-- Role Filter -->
-            <select name="role" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500">
+            <select name="role" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500">
                 <option value="">All Roles</option>
                 <option value="Agent" {{ request('role') === 'Agent' ? 'selected' : '' }}>Leaders only</option>
                 <option value="Sub Agent" {{ request('role') === 'Sub Agent' ? 'selected' : '' }}>Staff only</option>
@@ -86,7 +86,7 @@
 
             <!-- Leader Filter for Superadmin -->
             @if($isSuperAdmin && $allAgents->count() > 0)
-                <select name="agent_id" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500 font-medium">
+                <select name="agent_id" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500 font-medium">
                     <option value="">All Leaders</option>
                     @foreach($allAgents as $ag)
                         <option value="{{ $ag->id }}" {{ request('agent_id') == $ag->id ? 'selected' : '' }}>{{ $ag->name }}</option>
@@ -95,7 +95,7 @@
             @endif
 
             <!-- Project Filter -->
-            <select name="project_id" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500">
+            <select name="project_id" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500">
                 <option value="">All Projects</option>
                 @foreach($projects as $p)
                     <option value="{{ $p->id }}" {{ request('project_id') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
@@ -103,7 +103,7 @@
             </select>
 
             <!-- Sort By -->
-            <select name="sort" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500 font-medium">
+            <select name="sort" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500 font-medium">
                 <option value="leads_desc" {{ request('sort') === 'leads_desc' ? 'selected' : '' }}>Sort: Active Leads ↓</option>
                 <option value="bookings_desc" {{ request('sort') === 'bookings_desc' ? 'selected' : '' }}>Sort: Most Bookings ↓</option>
                 <option value="visits_desc" {{ request('sort') === 'visits_desc' ? 'selected' : '' }}>Sort: Most Site Visits ↓</option>
@@ -259,8 +259,10 @@
                     $isStaff = $u->role === 'Sub Agent';
                     $isSuper = $u->role === 'Superadmin';
                     $leaderName = $isStaff ? ($u->company->name ?? 'Unassigned Leader') : null;
+                    $cardSearchData = strtolower($u->name . ' ' . ($u->mobile ?? '') . ' ' . ($u->role ?? '') . ' ' . ($leaderName ?? '') . ' ' . ($u->company->name ?? ''));
                 @endphp
-                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:border-brand-500/60 hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden group {{ $hasActiveLeads ? 'ring-2 ring-emerald-500/20' : '' }}">
+                <div x-show="!searchKeyword || '{{ addslashes($cardSearchData) }}'.includes(searchKeyword.toLowerCase().trim())" 
+                     class="bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:border-brand-500/60 hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden group {{ $hasActiveLeads ? 'ring-2 ring-emerald-500/20' : '' }}">
                     
                     <!-- Card Body -->
                     <div class="p-5 space-y-3.5">
