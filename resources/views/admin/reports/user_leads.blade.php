@@ -47,7 +47,7 @@
 
             <!-- Action Buttons -->
             <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
-                <a href="{{ route('admin.leads.index') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition">
+                <a href="{{ route('admin.leads.index', ['view' => 'table']) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition">
                     <i class="fa-solid fa-table-list text-slate-500 text-[11px]"></i>
                     <span>Leads Table</span>
                 </a>
@@ -125,10 +125,10 @@
         </form>
     </div>
 
-    <!-- Overall Aggregate KPI Banner Cards (ALL NUMBERS ARE CLICKABLE) -->
+    <!-- Overall Aggregate KPI Banner Cards (ALL NUMBERS ARE CLICKABLE TO TABULAR LIST) -->
     <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
         <!-- 1. Active Leads (Engaged Pipeline) -->
-        <a href="{{ route('admin.leads.index', ['status' => 'active_leads']) }}" 
+        <a href="{{ route('admin.leads.index', ['status' => 'active_leads', 'view' => 'table']) }}" 
            class="bg-gradient-to-br from-emerald-500 to-teal-600 p-4 rounded-2xl text-white shadow-sm hover:scale-[1.02] transition-all block group"
            title="Click to view all active engaged leads">
             <div class="flex items-center justify-between">
@@ -145,7 +145,7 @@
         </a>
 
         <!-- 2. Follow Ups -->
-        <a href="{{ route('admin.leads.index', ['status' => 'follow_up']) }}" 
+        <a href="{{ route('admin.leads.index', ['status' => 'follow_up', 'view' => 'table']) }}" 
            class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs hover:border-amber-400 hover:shadow-xs transition-all block group"
            title="Click to view follow up leads">
             <div class="flex items-center justify-between">
@@ -162,7 +162,7 @@
         </a>
 
         <!-- 3. Call Later -->
-        <a href="{{ route('admin.leads.index', ['status' => 'call_later']) }}" 
+        <a href="{{ route('admin.leads.index', ['status' => 'call_later', 'view' => 'table']) }}" 
            class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs hover:border-purple-400 hover:shadow-xs transition-all block group"
            title="Click to view call later leads">
             <div class="flex items-center justify-between">
@@ -179,7 +179,7 @@
         </a>
 
         <!-- 4. Site Visits -->
-        <a href="{{ route('admin.leads.index', ['status' => 'site_visit_done']) }}" 
+        <a href="{{ route('admin.leads.index', ['status' => 'site_visit_done', 'view' => 'table']) }}" 
            class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs hover:border-indigo-400 hover:shadow-xs transition-all block group"
            title="Click to view site visits done">
             <div class="flex items-center justify-between">
@@ -196,7 +196,7 @@
         </a>
 
         <!-- 5. Bookings -->
-        <a href="{{ route('admin.leads.index', ['status' => 'booking_done']) }}" 
+        <a href="{{ route('admin.leads.index', ['status' => 'booking_done', 'view' => 'table']) }}" 
            class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs hover:border-emerald-400 hover:shadow-xs transition-all block group"
            title="Click to view bookings">
             <div class="flex items-center justify-between">
@@ -230,7 +230,7 @@
         </a>
 
         <!-- 7. Not Reached / Not Connecting -->
-        <a href="{{ route('admin.leads.index', ['status' => 'call_not_connecting']) }}" 
+        <a href="{{ route('admin.leads.index', ['status' => 'call_not_connecting', 'view' => 'table']) }}" 
            class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs hover:border-rose-400 hover:shadow-xs transition-all block group"
            title="Click to view unreached calls">
             <div class="flex items-center justify-between">
@@ -287,9 +287,9 @@
                                     </h4>
                                     
                                     <!-- Clickable Active Leads Badge -->
-                                    <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'active_leads']) }}" 
+                                    <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'active_leads', 'view' => 'table']) }}" 
                                        class="text-[10px] font-black px-2 py-0.5 rounded-md transition shrink-0 flex items-center gap-1 {{ $hasActiveLeads ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-slate-100 text-slate-500' }}"
-                                       title="Click to view {{ $c['active_leads'] }} active leads">
+                                       title="Click to view {{ $c['active_leads'] }} active leads in table">
                                         <i class="fa-solid fa-fire text-[9px] {{ $hasActiveLeads ? 'text-amber-500' : 'text-slate-400' }}"></i>
                                         <span>{{ $c['active_leads'] }} Active</span>
                                     </a>
@@ -342,9 +342,9 @@
                         <!-- SECTION 1: ACTIVE LEADS BANNER (CLICKABLE) -->
                         <div class="p-3 rounded-xl {{ $hasActiveLeads ? 'bg-gradient-to-r from-emerald-50/90 via-teal-50/40 to-white border border-emerald-200/80 shadow-2xs' : 'bg-slate-50 border border-slate-100' }} flex items-center justify-between">
                             <!-- Clickable Active Leads -->
-                            <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'active_leads']) }}" 
+                            <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'active_leads', 'view' => 'table']) }}" 
                                class="flex items-center gap-2.5 group/active hover:opacity-90 transition"
-                               title="Click to view {{ $c['active_leads'] }} active qualified leads">
+                               title="Click to view {{ $c['active_leads'] }} active qualified leads in table">
                                 <span class="w-8 h-8 rounded-lg {{ $hasActiveLeads ? 'bg-emerald-600 text-white shadow-2xs' : 'bg-slate-200 text-slate-500' }} flex items-center justify-center text-sm font-bold">
                                     <i class="fa-solid fa-fire"></i>
                                 </span>
@@ -374,25 +374,25 @@
                             <!-- Row 1 (3 tiles): Follow Up, Call Later, Site Visit -->
                             <div class="grid grid-cols-3 gap-1.5 text-center">
                                 <!-- Follow Up (Clickable) -->
-                                <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'follow_up']) }}" 
+                                <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'follow_up', 'view' => 'table']) }}" 
                                    class="p-2 rounded-xl bg-amber-50/80 hover:bg-amber-100 border border-amber-200/70 transition-all block group/tile"
-                                   title="Click to view {{ $c['follow_up'] }} follow up leads">
+                                   title="Click to view {{ $c['follow_up'] }} follow up leads in table">
                                     <span class="text-[9px] font-extrabold text-amber-800 uppercase tracking-wider block truncate">Follow Up</span>
                                     <span class="text-sm font-black text-amber-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['follow_up'] }}</span>
                                 </a>
 
                                 <!-- Call Later (Clickable) -->
-                                <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'call_later']) }}" 
+                                <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'call_later', 'view' => 'table']) }}" 
                                    class="p-2 rounded-xl bg-purple-50/80 hover:bg-purple-100 border border-purple-200/70 transition-all block group/tile"
-                                   title="Click to view {{ $c['call_later'] }} call later leads">
+                                   title="Click to view {{ $c['call_later'] }} call later leads in table">
                                     <span class="text-[9px] font-extrabold text-purple-800 uppercase tracking-wider block truncate">Call Later</span>
                                     <span class="text-sm font-black text-purple-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['call_later'] }}</span>
                                 </a>
 
                                 <!-- Site Visit (Clickable) -->
-                                <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'site_visit_done']) }}" 
+                                <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'site_visit_done', 'view' => 'table']) }}" 
                                    class="p-2 rounded-xl bg-indigo-50/80 hover:bg-indigo-100 border border-indigo-200/70 transition-all block group/tile"
-                                   title="Click to view {{ $c['site_visit_done'] }} site visits">
+                                   title="Click to view {{ $c['site_visit_done'] }} site visits in table">
                                     <span class="text-[9px] font-extrabold text-indigo-800 uppercase tracking-wider block truncate">Site Visit</span>
                                     <span class="text-sm font-black text-indigo-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['site_visit_done'] }}</span>
                                 </a>
@@ -401,17 +401,17 @@
                             <!-- Row 2 (2 tiles): Booking, Not Reached -->
                             <div class="grid grid-cols-2 gap-1.5 text-center">
                                 <!-- Booking (Clickable) -->
-                                <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'booking_done']) }}" 
+                                <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'booking_done', 'view' => 'table']) }}" 
                                    class="p-2 rounded-xl bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200/70 transition-all block group/tile"
-                                   title="Click to view {{ $c['booking_done'] }} bookings">
+                                   title="Click to view {{ $c['booking_done'] }} bookings in table">
                                     <span class="text-[9px] font-extrabold text-emerald-800 uppercase tracking-wider block truncate">Booking</span>
                                     <span class="text-sm font-black text-emerald-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['booking_done'] }}</span>
                                 </a>
 
                                 <!-- Not Reached (Clickable) -->
-                                <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'call_not_connecting']) }}" 
+                                <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'call_not_connecting', 'view' => 'table']) }}" 
                                    class="p-2 rounded-xl bg-rose-50/80 hover:bg-rose-100 border border-rose-200/70 transition-all block group/tile"
-                                   title="Click to view {{ $c['not_connecting'] }} unreached calls (not counted as lead)">
+                                   title="Click to view {{ $c['not_connecting'] }} unreached calls in table">
                                     <span class="text-[9px] font-extrabold text-rose-800 uppercase tracking-wider block truncate">Not Reached</span>
                                     <span class="text-sm font-black text-rose-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['not_connecting'] }}</span>
                                 </a>
@@ -447,7 +447,7 @@
                     <!-- Card Footer: Direct Drill-Down Buttons into Lists -->
                     <div class="p-3 bg-slate-50 border-t border-slate-100 flex items-center gap-2">
                         <!-- Primary Action: Show Active Leads List -->
-                        <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'active_leads']) }}" 
+                        <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'active_leads', 'view' => 'table']) }}" 
                            class="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold transition shadow-xs group-hover:bg-slate-900">
                             <i class="fa-solid fa-fire text-amber-400 text-xs"></i>
                             <span>Active Leads ({{ $c['active_leads'] }})</span>
@@ -455,9 +455,9 @@
                         </a>
 
                         <!-- All Inquiries Link -->
-                        <a href="{{ route('admin.leads.index', ['user_id' => $u->id]) }}" 
+                        <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'view' => 'table']) }}" 
                            class="px-2.5 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold transition shadow-2xs whitespace-nowrap"
-                           title="View all {{ $c['total_inquiries'] }} inquiries">
+                           title="View all {{ $c['total_inquiries'] }} inquiries in table">
                             <span>All ({{ $c['total_inquiries'] }})</span>
                         </a>
 

@@ -36,8 +36,8 @@ class ContactController extends Controller
         }
 
         // View Mode: 'cards' (Project-wise Cards) vs 'table' (Flat Inquiries Table)
-        // Default to 'cards' when viewing All Inquiries without specific project/user/search filters
-        $hasSpecificFilter = $request->filled('project_id') || $request->filled('user_id') || $request->filled('search') || $request->filled('date_from') || $request->filled('date_to');
+        // Default to 'cards' when viewing All Inquiries without specific project/user/status/search filters
+        $hasSpecificFilter = $request->filled('status') || $request->filled('project_id') || $request->filled('user_id') || $request->filled('search') || $request->filled('date_from') || $request->filled('date_to');
         $viewMode = $request->get('view', $hasSpecificFilter ? 'table' : 'cards');
 
         $query = Contact::with(['project', 'user.company', 'leadAssigns.user']);

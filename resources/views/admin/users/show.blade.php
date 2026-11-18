@@ -241,7 +241,7 @@
                         <i class="fa-solid fa-users-line text-brand-600"></i>
                         <span>Recent Assigned Leads</span>
                     </h3>
-                    <a href="{{ route('admin.leads.index', ['user_id' => $user->id]) }}" class="text-xs font-bold text-brand-600 hover:underline">
+                    <a href="{{ route('admin.leads.index', ['user_id' => $user->id, 'view' => 'table']) }}" class="text-xs font-bold text-brand-600 hover:underline">
                         View all leads &rarr;
                     </a>
                 </div>

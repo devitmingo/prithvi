@@ -131,9 +131,9 @@
     <!-- Overall Aggregate KPI Summary Cards (ALL NUMBERS ARE CLICKABLE) -->
     <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
         <!-- 1. Total Leads -->
-        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'leads', 'view' => $viewMode])) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'leads', 'view' => 'table'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'leads' || (!request('status') && $viewMode === 'cards') ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}"
-           title="Click to view all leads">
+           title="Click to view all leads in table">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Leads</span>
                 <span class="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs group-hover:bg-blue-600 group-hover:text-white transition-colors">
@@ -144,9 +144,9 @@
         </a>
 
         <!-- 2. Active Leads (Engaged Pipeline) -->
-        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'active_leads', 'view' => $viewMode])) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'active_leads', 'view' => 'table'])) }}" 
            class="group relative bg-gradient-to-br from-emerald-500 to-teal-600 p-4 rounded-2xl text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'active_leads' ? 'ring-2 ring-emerald-500 ring-offset-2' : '' }}"
-           title="Click to view all active qualified leads">
+           title="Click to view all active qualified leads in table">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-black uppercase tracking-wider text-emerald-100">Active Leads</span>
                 <span class="w-6 h-6 rounded-lg bg-white/20 text-white flex items-center justify-center text-xs">
@@ -157,9 +157,9 @@
         </a>
 
         <!-- 3. Follow Ups -->
-        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'follow_up', 'view' => $viewMode])) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'follow_up', 'view' => 'table'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'follow_up' ? 'border-amber-500 ring-2 ring-amber-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}"
-           title="Click to view follow up leads">
+           title="Click to view follow up leads in table">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Follow Ups</span>
                 <span class="w-6 h-6 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs group-hover:bg-amber-600 group-hover:text-white transition-colors">
@@ -170,9 +170,9 @@
         </a>
 
         <!-- 4. Call Later -->
-        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'call_later', 'view' => $viewMode])) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'call_later', 'view' => 'table'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'call_later' ? 'border-purple-500 ring-2 ring-purple-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}"
-           title="Click to view call later leads">
+           title="Click to view call later leads in table">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-purple-700 uppercase tracking-wider">Call Later</span>
                 <span class="w-6 h-6 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xs group-hover:bg-purple-600 group-hover:text-white transition-colors">
@@ -183,9 +183,9 @@
         </a>
 
         <!-- 5. Site Visits -->
-        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'site_visit_done', 'view' => $viewMode])) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'site_visit_done', 'view' => 'table'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'site_visit_done' ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}"
-           title="Click to view site visits done">
+           title="Click to view site visits done in table">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-indigo-700 uppercase tracking-wider">Site Visits</span>
                 <span class="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs group-hover:bg-indigo-600 group-hover:text-white transition-colors">
@@ -196,9 +196,9 @@
         </a>
 
         <!-- 6. Bookings Done -->
-        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'booking_done', 'view' => $viewMode])) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'booking_done', 'view' => 'table'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'booking_done' ? 'border-emerald-500 ring-2 ring-emerald-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}"
-           title="Click to view booked deals">
+           title="Click to view booked deals in table">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Bookings</span>
                 <span class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs group-hover:bg-emerald-600 group-hover:text-white transition-colors">
@@ -209,9 +209,9 @@
         </a>
 
         <!-- 7. Not Connecting / Not Received -->
-        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'call_not_connecting', 'view' => $viewMode])) }}" 
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'call_not_connecting', 'view' => 'table'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'call_not_connecting' ? 'border-rose-500 ring-2 ring-rose-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}"
-           title="Click to view unreached calls">
+           title="Click to view unreached calls in table">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-rose-700 uppercase tracking-wider">Not Reached</span>
                 <span class="w-6 h-6 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-xs group-hover:bg-rose-600 group-hover:text-white transition-colors">

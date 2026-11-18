@@ -99,7 +99,7 @@
             </div>
             <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
                 <span>Bookings Closed: <strong class="text-emerald-600">{{ $totalBookings }}</strong></span>
-                <a href="{{ route('admin.leads.index') }}" class="text-brand-600 hover:text-brand-700 font-semibold">View all &rarr;</a>
+                <a href="{{ route('admin.leads.index', ['view' => 'table']) }}" class="text-brand-600 hover:text-brand-700 font-semibold">View all &rarr;</a>
             </div>
         </div>
 
@@ -277,7 +277,7 @@
                     <h3 class="text-sm sm:text-base font-bold text-slate-900">Recent Leads & Inquiries</h3>
                     <p class="text-xs text-slate-500">Newly assigned customer inquiries</p>
                 </div>
-                <a href="{{ route('admin.leads.index') }}" class="text-xs font-bold text-brand-600 hover:underline">
+                <a href="{{ route('admin.leads.index', ['view' => 'table']) }}" class="text-xs font-bold text-brand-600 hover:underline">
                     View all &rarr;
                 </a>
             </div>
