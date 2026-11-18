@@ -432,52 +432,59 @@
                             </a>
                         </div>
 
-                        <!-- Section 3: 4-Tile Pipeline Matrix (ALL TILES CLICKABLE) -->
-                        <div class="grid grid-cols-4 gap-1.5 text-center">
-                            <!-- Follow Up (Clickable) -->
-                            <a href="{{ route('admin.leads.index', ['project_id' => $proj->id, 'status' => 'follow_up', 'view' => 'table']) }}" 
-                               class="p-2 rounded-xl bg-amber-50/80 hover:bg-amber-100 border border-amber-200/70 transition-all block group/tile"
-                               title="Click to view {{ $c['follow_up'] }} follow up leads">
-                                <span class="text-[8px] font-extrabold text-amber-800 uppercase tracking-wider block truncate">Follow Up</span>
-                                <span class="text-sm font-black text-amber-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['follow_up'] }}</span>
-                            </a>
+                        <!-- Section 3: 3 & 2 Pipeline Matrix (ALL TILES CLICKABLE) -->
+                        <div class="space-y-1.5">
+                            <!-- Row 1 (3 items): Follow Up, Call Later, Site Visit -->
+                            <div class="grid grid-cols-3 gap-1.5 text-center">
+                                <!-- Follow Up (Clickable) -->
+                                <a href="{{ route('admin.leads.index', ['project_id' => $proj->id, 'status' => 'follow_up', 'view' => 'table']) }}" 
+                                   class="p-2 rounded-xl bg-amber-50/80 hover:bg-amber-100 border border-amber-200/70 transition-all block group/tile"
+                                   title="Click to view {{ $c['follow_up'] }} follow up leads">
+                                    <span class="text-[9px] font-extrabold text-amber-800 uppercase tracking-wider block truncate">Follow Up</span>
+                                    <span class="text-sm font-black text-amber-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['follow_up'] }}</span>
+                                </a>
 
-                            <!-- Call Later (Clickable) -->
-                            <a href="{{ route('admin.leads.index', ['project_id' => $proj->id, 'status' => 'call_later', 'view' => 'table']) }}" 
-                               class="p-2 rounded-xl bg-purple-50/80 hover:bg-purple-100 border border-purple-200/70 transition-all block group/tile"
-                               title="Click to view {{ $c['call_later'] }} call later leads">
-                                <span class="text-[8px] font-extrabold text-purple-800 uppercase tracking-wider block truncate">Call Later</span>
-                                <span class="text-sm font-black text-purple-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['call_later'] }}</span>
-                            </a>
+                                <!-- Call Later (Clickable) -->
+                                <a href="{{ route('admin.leads.index', ['project_id' => $proj->id, 'status' => 'call_later', 'view' => 'table']) }}" 
+                                   class="p-2 rounded-xl bg-purple-50/80 hover:bg-purple-100 border border-purple-200/70 transition-all block group/tile"
+                                   title="Click to view {{ $c['call_later'] }} call later leads">
+                                    <span class="text-[9px] font-extrabold text-purple-800 uppercase tracking-wider block truncate">Call Later</span>
+                                    <span class="text-sm font-black text-purple-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['call_later'] }}</span>
+                                </a>
 
-                            <!-- Site Visit (Clickable) -->
-                            <a href="{{ route('admin.leads.index', ['project_id' => $proj->id, 'status' => 'site_visit_done', 'view' => 'table']) }}" 
-                               class="p-2 rounded-xl bg-indigo-50/80 hover:bg-indigo-100 border border-indigo-200/70 transition-all block group/tile"
-                               title="Click to view {{ $c['site_visit'] }} site visits done">
-                                <span class="text-[8px] font-extrabold text-indigo-800 uppercase tracking-wider block truncate">Site Visit</span>
-                                <span class="text-sm font-black text-indigo-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['site_visit'] }}</span>
-                            </a>
+                                <!-- Site Visit (Clickable) -->
+                                <a href="{{ route('admin.leads.index', ['project_id' => $proj->id, 'status' => 'site_visit_done', 'view' => 'table']) }}" 
+                                   class="p-2 rounded-xl bg-indigo-50/80 hover:bg-indigo-100 border border-indigo-200/70 transition-all block group/tile"
+                                   title="Click to view {{ $c['site_visit'] }} site visits done">
+                                    <span class="text-[9px] font-extrabold text-indigo-800 uppercase tracking-wider block truncate">Site Visit</span>
+                                    <span class="text-sm font-black text-indigo-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['site_visit'] }}</span>
+                                </a>
+                            </div>
 
-                            <!-- Bookings Done (Clickable) -->
-                            <a href="{{ route('admin.leads.index', ['project_id' => $proj->id, 'status' => 'booking_done', 'view' => 'table']) }}" 
-                               class="p-2 rounded-xl bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200/70 transition-all block group/tile"
-                               title="Click to view {{ $c['booking'] }} bookings">
-                                <span class="text-[8px] font-extrabold text-emerald-800 uppercase tracking-wider block truncate">Booking</span>
-                                <span class="text-sm font-black text-emerald-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['booking'] }}</span>
-                            </a>
+                            <!-- Row 2 (2 items): Booking, Not Reached -->
+                            <div class="grid grid-cols-2 gap-1.5 text-center">
+                                <!-- Bookings Done (Clickable) -->
+                                <a href="{{ route('admin.leads.index', ['project_id' => $proj->id, 'status' => 'booking_done', 'view' => 'table']) }}" 
+                                   class="p-2 rounded-xl bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200/70 transition-all block group/tile"
+                                   title="Click to view {{ $c['booking'] }} bookings">
+                                    <span class="text-[9px] font-extrabold text-emerald-800 uppercase tracking-wider block truncate">Booking</span>
+                                    <span class="text-sm font-black text-emerald-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['booking'] }}</span>
+                                </a>
+
+                                <!-- Not Reached (Clickable) -->
+                                <a href="{{ route('admin.leads.index', ['project_id' => $proj->id, 'status' => 'call_not_connecting', 'view' => 'table']) }}" 
+                                   class="p-2 rounded-xl bg-rose-50/80 hover:bg-rose-100 border border-rose-200/70 transition-all block group/tile"
+                                   title="Click to view {{ $c['not_connecting'] }} unreached calls (not counted as leads)">
+                                    <span class="text-[9px] font-extrabold text-rose-800 uppercase tracking-wider block truncate">Not Reached</span>
+                                    <span class="text-sm font-black text-rose-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['not_connecting'] }}</span>
+                                </a>
+                            </div>
                         </div>
 
                         <!-- Section 4: Secondary Outcomes & Conversion Rate -->
                         <div class="space-y-1.5 pt-1">
                             <div class="flex items-center justify-between text-xs">
-                                <!-- Clickable Not Reached -->
-                                <a href="{{ route('admin.leads.index', ['project_id' => $proj->id, 'status' => 'call_not_connecting', 'view' => 'table']) }}" 
-                                   class="text-[11px] font-semibold text-rose-700 hover:text-rose-800 flex items-center gap-1 group/nr"
-                                   title="Click to view unreached calls">
-                                    <i class="fa-solid fa-phone-slash text-[10px]"></i>
-                                    <span>Not Reached: <strong class="font-extrabold group-hover/nr:underline">{{ $c['not_connecting'] }}</strong></span>
-                                </a>
-
+                                <span class="text-[11px] font-medium text-slate-500">Pipeline Velocity</span>
                                 <span class="text-[11px] font-semibold text-slate-500">
                                     Booking Rate: <strong class="text-slate-800 font-black">{{ $c['conversion_rate'] }}%</strong>
                                 </span>

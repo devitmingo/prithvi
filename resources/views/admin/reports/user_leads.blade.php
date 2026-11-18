@@ -295,28 +295,28 @@
                                     </a>
                                 </div>
 
-                                <!-- Role & Affiliation -->
-                                <div class="mt-1 flex items-center gap-1.5 flex-wrap">
+                                <!-- Role & Affiliation (Kept in same row) -->
+                                <div class="mt-1 flex items-center gap-1.5 whitespace-nowrap overflow-hidden">
                                     @if($isLeader)
-                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200">
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200 shrink-0">
                                             <i class="fa-solid fa-user-tie text-[9px]"></i> Leader
                                         </span>
                                         @if($u->sub_agents_count > 0)
-                                            <span class="text-[10px] font-semibold text-slate-500">
+                                            <span class="text-[10px] font-semibold text-slate-500 truncate">
                                                 ({{ $u->sub_agents_count }} staff)
                                             </span>
                                         @endif
                                     @elseif($isStaff)
-                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-brand-50 text-brand-700 border border-brand-200">
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-brand-50 text-brand-700 border border-brand-200 shrink-0">
                                             <i class="fa-solid fa-users text-[9px]"></i> Staff
                                         </span>
                                         @if($leaderName)
-                                            <span class="text-[10px] text-slate-500 truncate max-w-[110px]" title="Leader: {{ $leaderName }}">
-                                                under <strong>{{ $leaderName }}</strong>
+                                            <span class="text-[10px] text-slate-500 truncate" title="Leader: {{ $leaderName }}">
+                                                under <strong class="text-slate-700 font-semibold">{{ $leaderName }}</strong>
                                             </span>
                                         @endif
                                     @elseif($isSuper)
-                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200">
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200 shrink-0">
                                             <i class="fa-solid fa-crown text-[9px]"></i> Superadmin
                                         </span>
                                     @endif
@@ -369,57 +369,65 @@
                             </a>
                         </div>
 
-                        <!-- SECTION 2: QUALIFIED STAGES MATRIX (CLICKABLE TILES) -->
-                        <div class="grid grid-cols-4 gap-1.5 text-center">
-                            <!-- Follow Up (Clickable) -->
-                            <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'follow_up']) }}" 
-                               class="p-2 rounded-xl bg-amber-50/80 hover:bg-amber-100 border border-amber-200/70 transition-all block group/tile"
-                               title="Click to view {{ $c['follow_up'] }} follow up leads">
-                                <span class="text-[8px] font-extrabold text-amber-800 uppercase tracking-wider block truncate">Follow Up</span>
-                                <span class="text-sm font-black text-amber-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['follow_up'] }}</span>
-                            </a>
+                        <!-- SECTION 2: 3 & 2 PIPELINE MATRIX (CLICKABLE TILES) -->
+                        <div class="space-y-1.5">
+                            <!-- Row 1 (3 tiles): Follow Up, Call Later, Site Visit -->
+                            <div class="grid grid-cols-3 gap-1.5 text-center">
+                                <!-- Follow Up (Clickable) -->
+                                <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'follow_up']) }}" 
+                                   class="p-2 rounded-xl bg-amber-50/80 hover:bg-amber-100 border border-amber-200/70 transition-all block group/tile"
+                                   title="Click to view {{ $c['follow_up'] }} follow up leads">
+                                    <span class="text-[9px] font-extrabold text-amber-800 uppercase tracking-wider block truncate">Follow Up</span>
+                                    <span class="text-sm font-black text-amber-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['follow_up'] }}</span>
+                                </a>
 
-                            <!-- Call Later (Clickable) -->
-                            <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'call_later']) }}" 
-                               class="p-2 rounded-xl bg-purple-50/80 hover:bg-purple-100 border border-purple-200/70 transition-all block group/tile"
-                               title="Click to view {{ $c['call_later'] }} call later leads">
-                                <span class="text-[8px] font-extrabold text-purple-800 uppercase tracking-wider block truncate">Call Later</span>
-                                <span class="text-sm font-black text-purple-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['call_later'] }}</span>
-                            </a>
+                                <!-- Call Later (Clickable) -->
+                                <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'call_later']) }}" 
+                                   class="p-2 rounded-xl bg-purple-50/80 hover:bg-purple-100 border border-purple-200/70 transition-all block group/tile"
+                                   title="Click to view {{ $c['call_later'] }} call later leads">
+                                    <span class="text-[9px] font-extrabold text-purple-800 uppercase tracking-wider block truncate">Call Later</span>
+                                    <span class="text-sm font-black text-purple-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['call_later'] }}</span>
+                                </a>
 
-                            <!-- Site Visit (Clickable) -->
-                            <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'site_visit_done']) }}" 
-                               class="p-2 rounded-xl bg-indigo-50/80 hover:bg-indigo-100 border border-indigo-200/70 transition-all block group/tile"
-                               title="Click to view {{ $c['site_visit_done'] }} site visits">
-                                <span class="text-[8px] font-extrabold text-indigo-800 uppercase tracking-wider block truncate">Visit</span>
-                                <span class="text-sm font-black text-indigo-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['site_visit_done'] }}</span>
-                            </a>
+                                <!-- Site Visit (Clickable) -->
+                                <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'site_visit_done']) }}" 
+                                   class="p-2 rounded-xl bg-indigo-50/80 hover:bg-indigo-100 border border-indigo-200/70 transition-all block group/tile"
+                                   title="Click to view {{ $c['site_visit_done'] }} site visits">
+                                    <span class="text-[9px] font-extrabold text-indigo-800 uppercase tracking-wider block truncate">Site Visit</span>
+                                    <span class="text-sm font-black text-indigo-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['site_visit_done'] }}</span>
+                                </a>
+                            </div>
 
-                            <!-- Booking (Clickable) -->
-                            <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'booking_done']) }}" 
-                               class="p-2 rounded-xl bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200/70 transition-all block group/tile"
-                               title="Click to view {{ $c['booking_done'] }} bookings">
-                                <span class="text-[8px] font-extrabold text-emerald-800 uppercase tracking-wider block truncate">Booking</span>
-                                <span class="text-sm font-black text-emerald-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['booking_done'] }}</span>
-                            </a>
+                            <!-- Row 2 (2 tiles): Booking, Not Reached -->
+                            <div class="grid grid-cols-2 gap-1.5 text-center">
+                                <!-- Booking (Clickable) -->
+                                <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'booking_done']) }}" 
+                                   class="p-2 rounded-xl bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200/70 transition-all block group/tile"
+                                   title="Click to view {{ $c['booking_done'] }} bookings">
+                                    <span class="text-[9px] font-extrabold text-emerald-800 uppercase tracking-wider block truncate">Booking</span>
+                                    <span class="text-sm font-black text-emerald-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['booking_done'] }}</span>
+                                </a>
+
+                                <!-- Not Reached (Clickable) -->
+                                <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'call_not_connecting']) }}" 
+                                   class="p-2 rounded-xl bg-rose-50/80 hover:bg-rose-100 border border-rose-200/70 transition-all block group/tile"
+                                   title="Click to view {{ $c['not_connecting'] }} unreached calls (not counted as lead)">
+                                    <span class="text-[9px] font-extrabold text-rose-800 uppercase tracking-wider block truncate">Not Reached</span>
+                                    <span class="text-sm font-black text-rose-700 mt-0.5 block group-hover/tile:scale-110 transition-transform">{{ $c['not_connecting'] }}</span>
+                                </a>
+                            </div>
                         </div>
 
-                        <!-- SECTION 3: CALL OUTCOME & UNCONNECTED STRIP (CLICKABLE) -->
-                        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs">
-                            <!-- Unconnected / Not Received (Clickable) -->
-                            <a href="{{ route('admin.leads.index', ['user_id' => $u->id, 'status' => 'call_not_connecting']) }}" 
-                               class="flex items-center gap-1.5 text-rose-700 hover:text-rose-900 font-semibold transition group/un"
-                               title="Click to view {{ $c['not_connecting'] }} unreached / not connected calls">
-                                <i class="fa-solid fa-phone-slash text-[10px] text-rose-500"></i>
-                                <span>Not Received: <strong class="text-rose-800 group-hover/un:underline">{{ $c['not_connecting'] }}</strong></span>
-                            </a>
-
-                            <!-- Connected Outcome (Clickable) -->
+                        <!-- SECTION 3: CALL LOGS STRIP (CLICKABLE) -->
+                        <div class="p-2 rounded-xl bg-slate-50 border border-slate-200/70 flex items-center justify-between text-xs">
+                            <span class="text-[11px] font-medium text-slate-500 flex items-center gap-1">
+                                <i class="fa-solid fa-phone-volume text-[10px] text-cyan-600"></i> Calls: <strong class="text-slate-800">{{ $c['calls_count'] }}</strong>
+                            </span>
                             <a href="{{ route('admin.call-histories.index', ['user_id' => $u->id]) }}" 
-                               class="text-[11px] text-slate-500 hover:text-brand-600 font-semibold flex items-center gap-1 transition"
+                               class="text-[11px] text-brand-600 hover:text-brand-700 font-semibold flex items-center gap-1 transition"
                                title="Click to view call outcome logs">
                                 <span>{{ $c['connected_calls'] }} Connected</span>
-                                <i class="fa-solid fa-angle-right text-[10px]"></i>
+                                <i class="fa-solid fa-angle-right text-[9px]"></i>
                             </a>
                         </div>
 
