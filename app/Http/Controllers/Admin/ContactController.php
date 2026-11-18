@@ -55,8 +55,12 @@ class ContactController extends Controller
         if ($request->filled('status')) {
             if ($request->status === 'active_leads') {
                 $query->whereIn('status', ['follow_up', 'call_later', 'site_visit_done', 'visit_scheduled', 'booking_done', 'interested']);
+            } elseif ($request->status === 'leads') {
+                $query->where('status', '!=', 'call_not_connecting');
             } elseif ($request->status === 'call_not_connecting') {
                 $query->whereIn('status', ['call_not_connecting', 'not_interested']);
+            } elseif ($request->status === 'site_visit_done') {
+                $query->whereIn('status', ['site_visit_done', 'visit_scheduled']);
             } else {
                 $query->where('status', $request->status);
             }
@@ -130,11 +134,12 @@ class ContactController extends Controller
         }
 
         $stats = [
-            'total' => (clone $statsQuery)->count(),
+            'total' => (clone $statsQuery)->where('status', '!=', 'call_not_connecting')->count(),
+            'total_inquiries' => (clone $statsQuery)->count(),
             'active_leads' => (clone $statsQuery)->whereIn('status', ['follow_up', 'call_later', 'site_visit_done', 'visit_scheduled', 'booking_done', 'interested'])->count(),
             'follow_up' => (clone $statsQuery)->where('status', 'follow_up')->count(),
             'call_later' => (clone $statsQuery)->where('status', 'call_later')->count(),
-            'site_visit_done' => (clone $statsQuery)->where('status', 'site_visit_done')->count(),
+            'site_visit_done' => (clone $statsQuery)->whereIn('status', ['site_visit_done', 'visit_scheduled'])->count(),
             'booking_done' => (clone $statsQuery)->where('status', 'booking_done')->count(),
             'not_connecting' => (clone $statsQuery)->whereIn('status', ['call_not_connecting', 'not_interested'])->count(),
         ];
@@ -143,13 +148,15 @@ class ContactController extends Controller
         $projects = Project::with(['city', 'state'])->where('status', 1)->orderBy('name')->get();
 
         // Project-wise Aggregated Stats for Project Cards View
+        // NOTE: "call_not_connecting" (Unreachable/Not Connecting) is strictly separated as call outcome and NOT counted as lead
         $projectStatsQuery = Contact::select(
             'project_id',
-            \Illuminate\Support\Facades\DB::raw('count(*) as total_leads'),
+            \Illuminate\Support\Facades\DB::raw('sum(case when status != "call_not_connecting" then 1 else 0 end) as total_leads'),
+            \Illuminate\Support\Facades\DB::raw('count(*) as total_inquiries'),
             \Illuminate\Support\Facades\DB::raw('sum(case when status in ("follow_up", "call_later", "site_visit_done", "visit_scheduled", "booking_done", "interested") then 1 else 0 end) as active_leads'),
             \Illuminate\Support\Facades\DB::raw('sum(case when status = "follow_up" then 1 else 0 end) as follow_up'),
             \Illuminate\Support\Facades\DB::raw('sum(case when status = "call_later" then 1 else 0 end) as call_later'),
-            \Illuminate\Support\Facades\DB::raw('sum(case when status = "site_visit_done" then 1 else 0 end) as site_visit_done'),
+            \Illuminate\Support\Facades\DB::raw('sum(case when status in ("site_visit_done", "visit_scheduled") then 1 else 0 end) as site_visit_done'),
             \Illuminate\Support\Facades\DB::raw('sum(case when status = "booking_done" then 1 else 0 end) as booking_done'),
             \Illuminate\Support\Facades\DB::raw('sum(case when status = "visit_scheduled" then 1 else 0 end) as visit_scheduled'),
             \Illuminate\Support\Facades\DB::raw('sum(case when status in ("call_not_connecting", "not_interested") then 1 else 0 end) as not_connecting')
@@ -195,6 +202,7 @@ class ContactController extends Controller
         foreach ($projects as $proj) {
             $ps = $projectStats->get($proj->id);
             $totalLeads = (int)($ps->total_leads ?? 0);
+            $totalInquiries = (int)($ps->total_inquiries ?? 0);
             $activeLeads = (int)($ps->active_leads ?? 0);
             $followUp = (int)($ps->follow_up ?? 0);
             $callLater = (int)($ps->call_later ?? 0);
@@ -207,6 +215,7 @@ class ContactController extends Controller
             $projectCards[] = [
                 'project' => $proj,
                 'total_leads' => $totalLeads,
+                'total_inquiries' => $totalInquiries,
                 'active_leads' => $activeLeads,
                 'follow_up' => $followUp,
                 'call_later' => $callLater,

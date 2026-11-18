@@ -133,7 +133,8 @@
 
                 <!-- Leads / CRM (Expandable Submenu) -->
                 @php
-                    $totalAllContacts = \App\Models\Contact::count();
+                    $totalAllContacts = \App\Models\Contact::where('status', '!=', 'call_not_connecting')->count();
+                    $totalAllInquiries = \App\Models\Contact::count();
                     $isLeadsActive = request()->routeIs('admin.leads.*') || request()->routeIs('admin.reports.user-leads');
                 @endphp
                 <div x-data="{ leadsOpen: {{ $isLeadsActive ? 'true' : 'false' }} }">

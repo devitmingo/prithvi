@@ -426,7 +426,7 @@
                         <!-- Pipeline Velocity Bar -->
                         <div class="space-y-1">
                             <div class="flex items-center justify-between text-[10px] text-slate-500">
-                                <span>Total Inquiries: <strong class="text-slate-700">{{ $c['total_leads'] }}</strong></span>
+                                <span>Total Leads: <strong class="text-slate-700">{{ $c['total_leads'] }}</strong></span>
                                 <span class="font-bold text-emerald-700">{{ $c['conversion_rate'] }}% Conversion</span>
                             </div>
                             <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
@@ -449,8 +449,8 @@
                         <!-- All Inquiries Link -->
                         <a href="{{ route('admin.leads.index', ['user_id' => $u->id]) }}" 
                            class="px-2.5 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold transition shadow-2xs whitespace-nowrap"
-                           title="View all {{ $c['total_leads'] }} inquiries">
-                            <span>All ({{ $c['total_leads'] }})</span>
+                           title="View all {{ $c['total_inquiries'] }} inquiries">
+                            <span>All ({{ $c['total_inquiries'] }})</span>
                         </a>
 
                         <!-- Call Logs Link -->

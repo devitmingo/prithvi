@@ -54,7 +54,8 @@ class DashboardController extends Controller
             $pendingPasswordRequests = UserForgotPassword::where('status', 1)->count();
 
             $totalProjects = Project::where('status', 1)->count();
-            $totalContacts = Contact::count();
+            $totalContacts = Contact::where('status', '!=', 'call_not_connecting')->count();
+            $totalInquiries = Contact::count();
             $totalBookings = Contact::where('status', 'booking_done')->count();
             $totalSiteVisits = ContactCallHistory::where(function ($q) {
                 $q->where('visited', 1)->orWhere('status', 'site_visit_done');
@@ -70,7 +71,8 @@ class DashboardController extends Controller
             $pendingPasswordRequests = UserForgotPassword::whereIn('user_id', $teamUserIds)->where('status', 1)->count();
 
             $totalProjects = Project::where('status', 1)->count();
-            $totalContacts = Contact::whereIn('user_id', $teamUserIds)->count();
+            $totalContacts = Contact::whereIn('user_id', $teamUserIds)->where('status', '!=', 'call_not_connecting')->count();
+            $totalInquiries = Contact::whereIn('user_id', $teamUserIds)->count();
             $totalBookings = Contact::whereIn('user_id', $teamUserIds)->where('status', 'booking_done')->count();
             $totalSiteVisits = ContactCallHistory::whereIn('user_id', $teamUserIds)->where(function ($q) {
                 $q->where('visited', 1)->orWhere('status', 'site_visit_done');

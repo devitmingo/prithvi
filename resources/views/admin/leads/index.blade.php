@@ -130,12 +130,12 @@
 
     <!-- Overall Aggregate KPI Summary Cards (ALL NUMBERS ARE CLICKABLE) -->
     <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-        <!-- 1. All Inquiries -->
-        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'view' => $viewMode])) }}" 
-           class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ !request('status') ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}"
-           title="Click to view all inquiries">
+        <!-- 1. Total Leads -->
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'leads', 'view' => $viewMode])) }}" 
+           class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'leads' || (!request('status') && $viewMode === 'cards') ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}"
+           title="Click to view all leads">
             <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">All Inquiries</span>
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Leads</span>
                 <span class="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs group-hover:bg-blue-600 group-hover:text-white transition-colors">
                     <i class="fa-solid fa-users"></i>
                 </span>
@@ -395,7 +395,7 @@
                                 </span>
                             </div>
                             <div class="text-right">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Inquiries</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Leads</span>
                                 <span class="font-black text-slate-800 text-sm">
                                     {{ $c['total_leads'] }} Leads
                                 </span>
@@ -495,9 +495,9 @@
                     <!-- Card Footer: Direct Drilldown Actions -->
                     <div class="p-4 bg-slate-50/90 border-t border-slate-100 flex items-center gap-2">
                         <!-- Primary: View Project Leads in Table -->
-                        <a href="{{ route('admin.leads.index', ['project_id' => $proj->id, 'view' => 'table']) }}" 
+                        <a href="{{ route('admin.leads.index', ['project_id' => $proj->id, 'status' => 'leads', 'view' => 'table']) }}" 
                            class="flex-1 py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold text-center transition flex items-center justify-center gap-2 shadow-xs group-hover:bg-brand-600">
-                            <span>View Inquiries ({{ $c['total_leads'] }})</span>
+                            <span>View Leads ({{ $c['total_leads'] }})</span>
                             <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                         </a>
 

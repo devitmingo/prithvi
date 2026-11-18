@@ -116,9 +116,9 @@ class ReportController extends Controller
             $metricQuery->whereDate('date', '<=', $request->date_to);
         }
 
-        $totalLeads = (clone $metricQuery)->count();
+        $totalLeads = (clone $metricQuery)->where('status', '!=', 'call_not_connecting')->count();
         $totalBookings = (clone $metricQuery)->where('status', 'booking_done')->count();
-        $totalVisits = (clone $metricQuery)->where('status', 'site_visit_done')->count();
+        $totalVisits = (clone $metricQuery)->whereIn('status', ['site_visit_done', 'visit_scheduled'])->count();
         $totalFollowUps = (clone $metricQuery)->where('status', 'follow_up')->count();
         $totalLost = (clone $metricQuery)->whereIn('status', ['call_not_connecting', 'not_interested'])->count();
 
@@ -518,13 +518,15 @@ class ReportController extends Controller
         $projectId = $request->project_id;
 
         // Build lead statistics aggregation query
+        // NOTE: "call_not_connecting" is strictly separated as call outcome and NOT counted as lead
         $leadStatsQuery = Contact::select(
             'user_id',
-            DB::raw('count(*) as total_leads'),
+            DB::raw('sum(case when status != "call_not_connecting" then 1 else 0 end) as total_leads'),
+            DB::raw('count(*) as total_inquiries'),
             DB::raw('sum(case when status in ("follow_up", "call_later", "site_visit_done", "visit_scheduled", "booking_done", "interested") then 1 else 0 end) as active_leads'),
             DB::raw('sum(case when status = "follow_up" then 1 else 0 end) as follow_up'),
             DB::raw('sum(case when status = "call_later" then 1 else 0 end) as call_later'),
-            DB::raw('sum(case when status = "site_visit_done" then 1 else 0 end) as site_visit_done'),
+            DB::raw('sum(case when status in ("site_visit_done", "visit_scheduled") then 1 else 0 end) as site_visit_done'),
             DB::raw('sum(case when status = "booking_done" then 1 else 0 end) as booking_done'),
             DB::raw('sum(case when status in ("call_not_connecting", "not_interested") then 1 else 0 end) as not_connecting'),
             DB::raw('sum(case when status = "interested" then 1 else 0 end) as interested'),
@@ -564,6 +566,7 @@ class ReportController extends Controller
             'users_with_leads' => 0,
             'users_with_active_leads' => 0,
             'total_leads' => 0,
+            'total_inquiries' => 0,
             'active_leads' => 0,
             'follow_up' => 0,
             'call_later' => 0,
@@ -577,6 +580,7 @@ class ReportController extends Controller
         foreach ($allUsers as $u) {
             $stats = $leadStatsByUser->get($u->id);
             $totalLeads = $stats ? (int)$stats->total_leads : 0;
+            $totalInquiries = $stats ? (int)$stats->total_inquiries : 0;
             $activeLeads = $stats ? (int)$stats->active_leads : 0;
             $followUps = $stats ? (int)$stats->follow_up : 0;
             $callLater = $stats ? (int)$stats->call_later : 0;
@@ -597,6 +601,7 @@ class ReportController extends Controller
             $card = [
                 'user' => $u,
                 'total_leads' => $totalLeads,
+                'total_inquiries' => $totalInquiries,
                 'active_leads' => $activeLeads,
                 'follow_up' => $followUps,
                 'call_later' => $callLater,
@@ -621,6 +626,7 @@ class ReportController extends Controller
                 $overallStats['users_with_active_leads']++;
             }
             $overallStats['total_leads'] += $totalLeads;
+            $overallStats['total_inquiries'] += $totalInquiries;
             $overallStats['active_leads'] += $activeLeads;
             $overallStats['follow_up'] += $followUps;
             $overallStats['call_later'] += $callLater;
