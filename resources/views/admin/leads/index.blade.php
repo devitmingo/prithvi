@@ -51,6 +51,19 @@
                         <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-md bg-brand-600 text-white shadow-2xs">
                             {{ $activeUser->role === 'Agent' ? 'Leader' : ($activeUser->role === 'Sub Agent' ? 'Staff' : $activeUser->role) }}
                         </span>
+                        @if(request('status') === 'active_leads')
+                            <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-md bg-emerald-600 text-white shadow-2xs flex items-center gap-1">
+                                <i class="fa-solid fa-fire text-[9px]"></i> Active Leads Only
+                            </span>
+                        @elseif(request('status') === 'call_not_connecting')
+                            <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-md bg-rose-600 text-white shadow-2xs flex items-center gap-1">
+                                <i class="fa-solid fa-phone-slash text-[9px]"></i> Unreached Calls Only
+                            </span>
+                        @elseif(request('status'))
+                            <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-md bg-slate-700 text-white shadow-2xs">
+                                {{ ucfirst(str_replace('_', ' ', request('status'))) }}
+                            </span>
+                        @endif
                         @if($activeUser->mobile)
                             <span class="text-xs text-slate-500 font-semibold flex items-center gap-1">
                                 <i class="fa-solid fa-phone text-[10px] text-slate-400"></i> {{ $activeUser->mobile }}
@@ -81,17 +94,29 @@
     @endif
 
     <!-- KPI Summary Cards with Beautiful Icons & Click-to-Filter -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
         <!-- All Inquiries -->
         <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id')])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ !request('status') ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">All Inquiries</span>
-                <span class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                <span class="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs group-hover:bg-blue-600 group-hover:text-white transition-colors">
                     <i class="fa-solid fa-users"></i>
                 </span>
             </div>
             <span class="text-2xl font-black text-slate-900 mt-2 block">{{ $stats['total'] }}</span>
+        </a>
+
+        <!-- Active Leads (Engaged Pipeline) -->
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'active_leads'])) }}" 
+           class="group relative bg-gradient-to-br from-emerald-500 to-teal-600 p-4 rounded-2xl text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'active_leads' ? 'ring-2 ring-emerald-500 ring-offset-2' : '' }}">
+            <div class="flex items-center justify-between">
+                <span class="text-[11px] font-black uppercase tracking-wider text-emerald-100">Active Leads</span>
+                <span class="w-6 h-6 rounded-lg bg-white/20 text-white flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-fire text-amber-300"></i>
+                </span>
+            </div>
+            <span class="text-2xl font-black mt-2 block">{{ $stats['active_leads'] }}</span>
         </a>
 
         <!-- Follow Ups -->
@@ -99,11 +124,23 @@
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'follow_up' ? 'border-amber-500 ring-2 ring-amber-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Follow Ups</span>
-                <span class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                <span class="w-6 h-6 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs group-hover:bg-amber-600 group-hover:text-white transition-colors">
                     <i class="fa-solid fa-clock-rotate-left"></i>
                 </span>
             </div>
             <span class="text-2xl font-black text-amber-600 mt-2 block">{{ $stats['follow_up'] }}</span>
+        </a>
+
+        <!-- Call Later -->
+        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'call_later'])) }}" 
+           class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'call_later' ? 'border-purple-500 ring-2 ring-purple-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
+            <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-purple-700 uppercase tracking-wider">Call Later</span>
+                <span class="w-6 h-6 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xs group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                    <i class="fa-solid fa-calendar-day"></i>
+                </span>
+            </div>
+            <span class="text-2xl font-black text-purple-600 mt-2 block">{{ $stats['call_later'] }}</span>
         </a>
 
         <!-- Site Visits -->
@@ -111,7 +148,7 @@
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'site_visit_done' ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-indigo-700 uppercase tracking-wider">Site Visits</span>
-                <span class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                <span class="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                     <i class="fa-solid fa-location-dot"></i>
                 </span>
             </div>
@@ -123,31 +160,19 @@
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'booking_done' ? 'border-emerald-500 ring-2 ring-emerald-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Bookings</span>
-                <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                <span class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs group-hover:bg-emerald-600 group-hover:text-white transition-colors">
                     <i class="fa-solid fa-circle-check"></i>
                 </span>
             </div>
             <span class="text-2xl font-black text-emerald-600 mt-2 block">{{ $stats['booking_done'] }}</span>
         </a>
 
-        <!-- Call Later -->
-        <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'call_later'])) }}" 
-           class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'call_later' ? 'border-purple-500 ring-2 ring-purple-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
-            <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold text-purple-700 uppercase tracking-wider">Call Later</span>
-                <span class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xs group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                    <i class="fa-solid fa-calendar-day"></i>
-                </span>
-            </div>
-            <span class="text-2xl font-black text-purple-600 mt-2 block">{{ $stats['call_later'] }}</span>
-        </a>
-
-        <!-- Not Connecting -->
+        <!-- Not Connecting / Not Received -->
         <a href="{{ route('admin.leads.index', array_filter(['project_id' => request('project_id'), 'user_id' => request('user_id'), 'status' => 'call_not_connecting'])) }}" 
            class="group relative bg-white p-4 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md {{ request('status') === 'call_not_connecting' ? 'border-rose-500 ring-2 ring-rose-500/20 shadow-sm' : 'border-slate-200/80 shadow-2xs' }}">
             <div class="flex items-center justify-between">
                 <span class="text-[11px] font-bold text-rose-700 uppercase tracking-wider">Not Reached</span>
-                <span class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-xs group-hover:bg-rose-600 group-hover:text-white transition-colors">
+                <span class="w-6 h-6 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-xs group-hover:bg-rose-600 group-hover:text-white transition-colors">
                     <i class="fa-solid fa-phone-slash"></i>
                 </span>
             </div>
@@ -189,14 +214,15 @@
             @endif
 
             <!-- Status Filter -->
-            <select name="status" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500">
+            <select name="status" onchange="this.form.submit()" class="text-xs rounded-xl border border-slate-200 px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 font-medium">
                 <option value="">All Statuses</option>
+                <option value="active_leads" {{ request('status') === 'active_leads' ? 'selected' : '' }}>⭐ Active Leads (Engaged)</option>
                 <option value="follow_up" {{ request('status') === 'follow_up' ? 'selected' : '' }}>Follow Up</option>
+                <option value="call_later" {{ request('status') === 'call_later' ? 'selected' : '' }}>Call Later</option>
                 <option value="site_visit_done" {{ request('status') === 'site_visit_done' ? 'selected' : '' }}>Site Visit Done</option>
                 <option value="booking_done" {{ request('status') === 'booking_done' ? 'selected' : '' }}>Booking Done</option>
                 <option value="visit_scheduled" {{ request('status') === 'visit_scheduled' ? 'selected' : '' }}>Visit Scheduled</option>
-                <option value="call_later" {{ request('status') === 'call_later' ? 'selected' : '' }}>Call Later</option>
-                <option value="call_not_connecting" {{ request('status') === 'call_not_connecting' ? 'selected' : '' }}>Call Not Connecting</option>
+                <option value="call_not_connecting" {{ request('status') === 'call_not_connecting' ? 'selected' : '' }}>Not Received / Unconnected</option>
                 <option value="interested" {{ request('status') === 'interested' ? 'selected' : '' }}>Interested</option>
                 <option value="not_interested" {{ request('status') === 'not_interested' ? 'selected' : '' }}>Not Interested</option>
             </select>

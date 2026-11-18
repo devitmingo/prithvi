@@ -40,7 +40,13 @@ class ContactController extends Controller
 
         // Filters
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            if ($request->status === 'active_leads') {
+                $query->whereIn('status', ['follow_up', 'call_later', 'site_visit_done', 'visit_scheduled', 'booking_done', 'interested']);
+            } elseif ($request->status === 'call_not_connecting') {
+                $query->whereIn('status', ['call_not_connecting', 'not_interested']);
+            } else {
+                $query->where('status', $request->status);
+            }
         }
 
         if ($request->filled('project_id')) {
@@ -112,11 +118,12 @@ class ContactController extends Controller
 
         $stats = [
             'total' => (clone $statsQuery)->count(),
+            'active_leads' => (clone $statsQuery)->whereIn('status', ['follow_up', 'call_later', 'site_visit_done', 'visit_scheduled', 'booking_done', 'interested'])->count(),
             'follow_up' => (clone $statsQuery)->where('status', 'follow_up')->count(),
+            'call_later' => (clone $statsQuery)->where('status', 'call_later')->count(),
             'site_visit_done' => (clone $statsQuery)->where('status', 'site_visit_done')->count(),
             'booking_done' => (clone $statsQuery)->where('status', 'booking_done')->count(),
-            'not_connecting' => (clone $statsQuery)->where('status', 'call_not_connecting')->count(),
-            'call_later' => (clone $statsQuery)->where('status', 'call_later')->count(),
+            'not_connecting' => (clone $statsQuery)->whereIn('status', ['call_not_connecting', 'not_interested'])->count(),
         ];
 
         $projects = Project::where('status', 1)->orderBy('name')->get();

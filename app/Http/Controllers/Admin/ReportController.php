@@ -521,11 +521,12 @@ class ReportController extends Controller
         $leadStatsQuery = Contact::select(
             'user_id',
             DB::raw('count(*) as total_leads'),
+            DB::raw('sum(case when status in ("follow_up", "call_later", "site_visit_done", "visit_scheduled", "booking_done", "interested") then 1 else 0 end) as active_leads'),
             DB::raw('sum(case when status = "follow_up" then 1 else 0 end) as follow_up'),
+            DB::raw('sum(case when status = "call_later" then 1 else 0 end) as call_later'),
             DB::raw('sum(case when status = "site_visit_done" then 1 else 0 end) as site_visit_done'),
             DB::raw('sum(case when status = "booking_done" then 1 else 0 end) as booking_done'),
-            DB::raw('sum(case when status = "call_later" then 1 else 0 end) as call_later'),
-            DB::raw('sum(case when status = "call_not_connecting" then 1 else 0 end) as not_connecting'),
+            DB::raw('sum(case when status in ("call_not_connecting", "not_interested") then 1 else 0 end) as not_connecting'),
             DB::raw('sum(case when status = "interested" then 1 else 0 end) as interested'),
             DB::raw('max(created_at) as latest_lead_at')
         );
@@ -542,56 +543,70 @@ class ReportController extends Controller
 
         $leadStatsByUser = $leadStatsQuery->groupBy('user_id')->get()->keyBy('user_id');
 
-        // Build call logs aggregation query
-        $callsQuery = ContactCallHistory::select('user_id', DB::raw('count(*) as total_calls'));
+        // Build call logs aggregation query (Calls attempted & unconnected calls)
+        $callsQuery = ContactCallHistory::select(
+            'user_id',
+            DB::raw('count(*) as total_calls'),
+            DB::raw('sum(case when status in ("call_not_connecting", "not_interested") then 1 else 0 end) as unconnected_calls')
+        );
         if ($dateFrom) {
             $callsQuery->whereDate('created_at', '>=', $dateFrom);
         }
         if ($dateTo) {
             $callsQuery->whereDate('created_at', '<=', $dateTo);
         }
-        $callCountsByUser = $callsQuery->groupBy('user_id')->pluck('total_calls', 'user_id')->toArray();
+        $callStatsByUser = $callsQuery->groupBy('user_id')->get()->keyBy('user_id');
 
         // Build composite user cards
         $userCards = [];
         $overallStats = [
             'total_users' => 0,
             'users_with_leads' => 0,
+            'users_with_active_leads' => 0,
             'total_leads' => 0,
+            'active_leads' => 0,
             'follow_up' => 0,
+            'call_later' => 0,
             'site_visit_done' => 0,
             'booking_done' => 0,
-            'call_later' => 0,
             'not_connecting' => 0,
             'total_calls' => 0,
+            'unconnected_calls' => 0,
         ];
 
         foreach ($allUsers as $u) {
             $stats = $leadStatsByUser->get($u->id);
             $totalLeads = $stats ? (int)$stats->total_leads : 0;
+            $activeLeads = $stats ? (int)$stats->active_leads : 0;
             $followUps = $stats ? (int)$stats->follow_up : 0;
+            $callLater = $stats ? (int)$stats->call_later : 0;
             $siteVisits = $stats ? (int)$stats->site_visit_done : 0;
             $bookings = $stats ? (int)$stats->booking_done : 0;
-            $callLater = $stats ? (int)$stats->call_later : 0;
             $notConnecting = $stats ? (int)$stats->not_connecting : 0;
             $interested = $stats ? (int)$stats->interested : 0;
             $latestLeadAt = $stats ? $stats->latest_lead_at : null;
 
-            $callsCount = $callCountsByUser[$u->id] ?? 0;
+            $callStat = $callStatsByUser->get($u->id);
+            $callsCount = $callStat ? (int)$callStat->total_calls : 0;
+            $unconnectedCalls = $callStat ? (int)$callStat->unconnected_calls : 0;
+            $connectedCalls = max(0, $callsCount - $unconnectedCalls);
 
-            // Conversion Rate: % of leads converted to visit or booking
-            $conversionRate = $totalLeads > 0 ? round((($siteVisits + $bookings) / $totalLeads) * 100, 1) : 0;
+            // Conversion Rate: % of active leads converted to visit or booking
+            $conversionRate = $activeLeads > 0 ? round((($siteVisits + $bookings) / $activeLeads) * 100, 1) : ($totalLeads > 0 ? round((($siteVisits + $bookings) / $totalLeads) * 100, 1) : 0);
 
             $card = [
                 'user' => $u,
                 'total_leads' => $totalLeads,
+                'active_leads' => $activeLeads,
                 'follow_up' => $followUps,
+                'call_later' => $callLater,
                 'site_visit_done' => $siteVisits,
                 'booking_done' => $bookings,
-                'call_later' => $callLater,
                 'not_connecting' => $notConnecting,
                 'interested' => $interested,
                 'calls_count' => $callsCount,
+                'unconnected_calls' => $unconnectedCalls,
+                'connected_calls' => $connectedCalls,
                 'latest_lead_at' => $latestLeadAt,
                 'conversion_rate' => $conversionRate,
             ];
@@ -602,19 +617,24 @@ class ReportController extends Controller
             if ($totalLeads > 0) {
                 $overallStats['users_with_leads']++;
             }
+            if ($activeLeads > 0) {
+                $overallStats['users_with_active_leads']++;
+            }
             $overallStats['total_leads'] += $totalLeads;
+            $overallStats['active_leads'] += $activeLeads;
             $overallStats['follow_up'] += $followUps;
+            $overallStats['call_later'] += $callLater;
             $overallStats['site_visit_done'] += $siteVisits;
             $overallStats['booking_done'] += $bookings;
-            $overallStats['call_later'] += $callLater;
             $overallStats['not_connecting'] += $notConnecting;
             $overallStats['total_calls'] += $callsCount;
+            $overallStats['unconnected_calls'] += $unconnectedCalls;
         }
 
         // Sorting
         $sortBy = $request->get('sort', 'leads_desc');
         if ($sortBy === 'leads_desc') {
-            usort($userCards, fn($a, $b) => $b['total_leads'] <=> $a['total_leads']);
+            usort($userCards, fn($a, $b) => $b['active_leads'] <=> $a['active_leads'] ?: $b['total_leads'] <=> $a['total_leads']);
         } elseif ($sortBy === 'bookings_desc') {
             usort($userCards, fn($a, $b) => $b['booking_done'] <=> $a['booking_done']);
         } elseif ($sortBy === 'visits_desc') {
@@ -629,7 +649,9 @@ class ReportController extends Controller
 
         // Filter by active leads if requested
         if ($request->get('filter_leads') === 'active') {
-            $userCards = array_values(array_filter($userCards, fn($c) => $c['total_leads'] > 0));
+            $userCards = array_values(array_filter($userCards, fn($c) => $c['active_leads'] > 0));
+        } elseif ($request->get('filter_leads') === 'unreached') {
+            $userCards = array_values(array_filter($userCards, fn($c) => $c['not_connecting'] > 0 || $c['unconnected_calls'] > 0));
         }
 
         // CSV Export Trigger
@@ -637,7 +659,7 @@ class ReportController extends Controller
             $filename = 'userwise_leads_report_' . date('Y_m_d_His') . '.csv';
             return new StreamedResponse(function () use ($userCards) {
                 $handle = fopen('php://output', 'w');
-                fputcsv($handle, ['User ID', 'Executive Name', 'Role', 'Leader', 'Mobile', 'Total Leads', 'Follow Ups', 'Site Visits', 'Bookings', 'Call Later', 'Not Reached', 'Calls Made', 'Conversion %']);
+                fputcsv($handle, ['User ID', 'Executive Name', 'Role', 'Leader', 'Mobile', 'Active Leads', 'Follow Ups', 'Call Later', 'Site Visits', 'Bookings', 'Calls Attempted', 'Not Reached', 'Total Inquiries', 'Conversion %']);
                 foreach ($userCards as $c) {
                     $u = $c['user'];
                     $leaderOrAgency = $u->role === 'Agent' 
@@ -649,13 +671,14 @@ class ReportController extends Controller
                         $u->role === 'Agent' ? 'Leader' : ($u->role === 'Sub Agent' ? 'Staff' : $u->role),
                         $leaderOrAgency,
                         $u->mobile,
-                        $c['total_leads'],
+                        $c['active_leads'],
                         $c['follow_up'],
+                        $c['call_later'],
                         $c['site_visit_done'],
                         $c['booking_done'],
-                        $c['call_later'],
-                        $c['not_connecting'],
                         $c['calls_count'],
+                        $c['not_connecting'],
+                        $c['total_leads'],
                         $c['conversion_rate'] . '%'
                     ]);
                 }
