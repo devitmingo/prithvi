@@ -153,11 +153,20 @@
                         </div>
                     </button>
                     <div x-show="leadsOpen" x-cloak class="mt-1 pl-7 pr-2 space-y-1">
-                        <!-- All Leads Pipeline -->
+                        <!-- Project-wise Lead Cards -->
                         <a href="{{ route('admin.leads.index') }}" 
-                           class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors {{ request()->routeIs('admin.leads.index') && !request('project_id') && !request('user_id') ? 'text-brand-700 bg-brand-50 border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
+                           class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors {{ request()->routeIs('admin.leads.index') && request('view') !== 'table' && !request('project_id') && !request('user_id') ? 'text-brand-700 bg-brand-50 border-l-2 border-brand-600 pl-2.5 font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             <span class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-layer-group text-[10px] text-slate-400"></i> All Inquiries
+                                <i class="fa-solid fa-city text-[10px] text-brand-600"></i> Project-wise Cards
+                            </span>
+                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-brand-100 text-brand-700 font-bold uppercase">Cards</span>
+                        </a>
+
+                        <!-- All Inquiries Table -->
+                        <a href="{{ route('admin.leads.index', ['view' => 'table']) }}" 
+                           class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors {{ request()->routeIs('admin.leads.index') && request('view') === 'table' && !request('project_id') && !request('user_id') ? 'text-blue-700 bg-blue-50 border-l-2 border-blue-600 pl-2.5 font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
+                            <span class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-table-list text-[10px] text-slate-400"></i> All Inquiries Table
                             </span>
                             <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-600 font-medium">
                                 {{ $totalAllContacts }}
@@ -166,11 +175,11 @@
 
                         <!-- User-wise Lead Cards -->
                         <a href="{{ route('admin.reports.user-leads') }}" 
-                           class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors {{ request()->routeIs('admin.reports.user-leads') ? 'text-brand-700 bg-brand-50 border-l-2 border-brand-600 pl-2.5 font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
+                           class="flex items-center justify-between px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors {{ request()->routeIs('admin.reports.user-leads') ? 'text-purple-700 bg-purple-50 border-l-2 border-purple-600 pl-2.5 font-bold shadow-2xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             <span class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-address-card text-[10px] text-brand-600"></i> User-wise Cards
+                                <i class="fa-solid fa-address-card text-[10px] text-purple-600"></i> User-wise Cards
                             </span>
-                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-brand-100 text-brand-700 font-bold uppercase">Cards</span>
+                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-100 text-purple-700 font-bold uppercase">Cards</span>
                         </a>
 
                         <!-- Project Wise Submenu Header -->

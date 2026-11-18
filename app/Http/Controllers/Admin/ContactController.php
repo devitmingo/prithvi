@@ -21,19 +21,32 @@ class ContactController extends Controller
         $currentUser = Auth::user();
         $isSuperAdmin = $currentUser->isSuperAdmin();
 
-        $query = Contact::with(['project', 'user.company', 'leadAssigns.user']);
-
-        // Team scoping
+        $teamUserIds = [];
+        $agentTeamIds = [];
         if (!$isSuperAdmin) {
             $teamUserIds = User::where('id', $currentUser->id)
                 ->orWhere('company_id', $currentUser->id)
                 ->pluck('id')->toArray();
-            $query->whereIn('user_id', $teamUserIds);
         } else {
             if ($request->filled('agent_id')) {
                 $agentTeamIds = User::where('id', $request->agent_id)
                     ->orWhere('company_id', $request->agent_id)
                     ->pluck('id')->toArray();
+            }
+        }
+
+        // View Mode: 'cards' (Project-wise Cards) vs 'table' (Flat Inquiries Table)
+        // Default to 'cards' when viewing All Inquiries without specific project/user/search filters
+        $hasSpecificFilter = $request->filled('project_id') || $request->filled('user_id') || $request->filled('search') || $request->filled('date_from') || $request->filled('date_to');
+        $viewMode = $request->get('view', $hasSpecificFilter ? 'table' : 'cards');
+
+        $query = Contact::with(['project', 'user.company', 'leadAssigns.user']);
+
+        // Team scoping
+        if (!$isSuperAdmin) {
+            $query->whereIn('user_id', $teamUserIds);
+        } else {
+            if ($request->filled('agent_id')) {
                 $query->whereIn('user_id', $agentTeamIds);
             }
         }
@@ -94,7 +107,7 @@ class ContactController extends Controller
                 ->toArray();
         }
 
-        // Stats calculation
+        // Overall stats calculation
         $statsQuery = Contact::query();
         if (!$isSuperAdmin) {
             $statsQuery->whereIn('user_id', $teamUserIds);
@@ -126,7 +139,109 @@ class ContactController extends Controller
             'not_connecting' => (clone $statsQuery)->whereIn('status', ['call_not_connecting', 'not_interested'])->count(),
         ];
 
-        $projects = Project::where('status', 1)->orderBy('name')->get();
+        // All active projects with relationships
+        $projects = Project::with(['city', 'state'])->where('status', 1)->orderBy('name')->get();
+
+        // Project-wise Aggregated Stats for Project Cards View
+        $projectStatsQuery = Contact::select(
+            'project_id',
+            \Illuminate\Support\Facades\DB::raw('count(*) as total_leads'),
+            \Illuminate\Support\Facades\DB::raw('sum(case when status in ("follow_up", "call_later", "site_visit_done", "visit_scheduled", "booking_done", "interested") then 1 else 0 end) as active_leads'),
+            \Illuminate\Support\Facades\DB::raw('sum(case when status = "follow_up" then 1 else 0 end) as follow_up'),
+            \Illuminate\Support\Facades\DB::raw('sum(case when status = "call_later" then 1 else 0 end) as call_later'),
+            \Illuminate\Support\Facades\DB::raw('sum(case when status = "site_visit_done" then 1 else 0 end) as site_visit_done'),
+            \Illuminate\Support\Facades\DB::raw('sum(case when status = "booking_done" then 1 else 0 end) as booking_done'),
+            \Illuminate\Support\Facades\DB::raw('sum(case when status = "visit_scheduled" then 1 else 0 end) as visit_scheduled'),
+            \Illuminate\Support\Facades\DB::raw('sum(case when status in ("call_not_connecting", "not_interested") then 1 else 0 end) as not_connecting')
+        );
+
+        if (!$isSuperAdmin) {
+            $projectStatsQuery->whereIn('user_id', $teamUserIds);
+        } elseif ($request->filled('agent_id')) {
+            $projectStatsQuery->whereIn('user_id', $agentTeamIds);
+        }
+
+        if ($request->filled('user_id')) {
+            $userId = $request->user_id;
+            $projectStatsQuery->where(function ($q) use ($userId) {
+                $q->where('user_id', $userId)
+                  ->orWhereHas('leadAssigns', function ($sub) use ($userId) {
+                      $sub->where('user_id', $userId);
+                  });
+            });
+        }
+
+        $projectStats = $projectStatsQuery->groupBy('project_id')->get()->keyBy('project_id');
+
+        // Total call attempts logged per project
+        $projectCallsQuery = ContactCallHistory::join('contacts', 'contact_call_histories.contact_id', '=', 'contacts.id')
+            ->select('contacts.project_id', \Illuminate\Support\Facades\DB::raw('count(contact_call_histories.id) as total_calls'));
+
+        if (!$isSuperAdmin) {
+            $projectCallsQuery->whereIn('contacts.user_id', $teamUserIds);
+        } elseif ($request->filled('agent_id')) {
+            $projectCallsQuery->whereIn('contacts.user_id', $agentTeamIds);
+        }
+
+        if ($request->filled('user_id')) {
+            $projectCallsQuery->where('contact_call_histories.user_id', $request->user_id);
+        }
+
+        $projectCalls = $projectCallsQuery->groupBy('contacts.project_id')
+            ->pluck('total_calls', 'contacts.project_id')
+            ->toArray();
+
+        $projectCards = [];
+        foreach ($projects as $proj) {
+            $ps = $projectStats->get($proj->id);
+            $totalLeads = (int)($ps->total_leads ?? 0);
+            $activeLeads = (int)($ps->active_leads ?? 0);
+            $followUp = (int)($ps->follow_up ?? 0);
+            $callLater = (int)($ps->call_later ?? 0);
+            $siteVisit = (int)($ps->site_visit_done ?? 0);
+            $booking = (int)($ps->booking_done ?? 0);
+            $notConnecting = (int)($ps->not_connecting ?? 0);
+            $callsCount = (int)($projectCalls[$proj->id] ?? 0);
+            $conversionRate = $totalLeads > 0 ? round(($booking / $totalLeads) * 100, 1) : 0;
+
+            $projectCards[] = [
+                'project' => $proj,
+                'total_leads' => $totalLeads,
+                'active_leads' => $activeLeads,
+                'follow_up' => $followUp,
+                'call_later' => $callLater,
+                'site_visit' => $siteVisit,
+                'booking' => $booking,
+                'not_connecting' => $notConnecting,
+                'calls_count' => $callsCount,
+                'conversion_rate' => $conversionRate,
+            ];
+        }
+
+        // Sort Project Cards:
+        $sort = $request->get('sort', 'leads_desc');
+        if ($sort === 'active_desc' || $sort === 'leads_desc') {
+            usort($projectCards, function ($a, $b) {
+                if ($b['active_leads'] !== $a['active_leads']) {
+                    return $b['active_leads'] <=> $a['active_leads'];
+                }
+                if ($b['total_leads'] !== $a['total_leads']) {
+                    return $b['total_leads'] <=> $a['total_leads'];
+                }
+                return strcmp($a['project']->name, $b['project']->name);
+            });
+        } elseif ($sort === 'total_desc') {
+            usort($projectCards, function ($a, $b) {
+                if ($b['total_leads'] !== $a['total_leads']) {
+                    return $b['total_leads'] <=> $a['total_leads'];
+                }
+                return strcmp($a['project']->name, $b['project']->name);
+            });
+        } elseif ($sort === 'calls_desc') {
+            usort($projectCards, fn($a, $b) => $b['calls_count'] <=> $a['calls_count']);
+        } elseif ($sort === 'name_asc') {
+            usort($projectCards, fn($a, $b) => strcmp($a['project']->name, $b['project']->name));
+        }
 
         if ($isSuperAdmin) {
             $assignableUsers = User::whereIn('role', ['Agent', 'Sub Agent'])->where('status', 1)->orderBy('name')->get();
@@ -139,8 +254,21 @@ class ContactController extends Controller
         }
 
         $selectedUser = $request->filled('user_id') ? User::with('company')->find($request->user_id) : null;
+        $selectedProject = $request->filled('project_id') ? Project::with(['city', 'state'])->find($request->project_id) : null;
 
-        return view('admin.leads.index', compact('contacts', 'stats', 'projects', 'assignableUsers', 'agents', 'isSuperAdmin', 'callCountsByPhone', 'selectedUser'));
+        return view('admin.leads.index', compact(
+            'contacts',
+            'stats',
+            'projects',
+            'projectCards',
+            'viewMode',
+            'assignableUsers',
+            'agents',
+            'isSuperAdmin',
+            'callCountsByPhone',
+            'selectedUser',
+            'selectedProject'
+        ));
     }
 
     /**

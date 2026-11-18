@@ -47,6 +47,12 @@ class CallHistoryController extends Controller
             $query->where('user_id', $request->user_id);
         }
 
+        if ($request->filled('project_id')) {
+            $query->whereHas('contact', function ($cq) use ($request) {
+                $cq->where('project_id', $request->project_id);
+            });
+        }
+
         if ($request->filled('date_from')) {
             $query->whereDate('date', '>=', $request->date_from);
         }
