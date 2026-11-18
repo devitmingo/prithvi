@@ -237,13 +237,13 @@
                     <span>Call History & Visits</span>
                 </a>
 
-                <!-- Attendance & Salary Management -->
-                <div x-data="{ attOpen: {{ request()->routeIs('admin.attendances.*') || request()->routeIs('admin.salary.*') ? 'true' : 'false' }} }">
+                <!-- Attendance Management -->
+                <div x-data="{ attOpen: {{ request()->routeIs('admin.attendances.*') ? 'true' : 'false' }} }">
                     <button @click="attOpen = !attOpen" 
-                            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.attendances.*') || request()->routeIs('admin.salary.*') ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                            class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all {{ request()->routeIs('admin.attendances.*') ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                         <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-clock-rotate-left w-5 text-center text-base {{ request()->routeIs('admin.attendances.*') || request()->routeIs('admin.salary.*') ? 'text-brand-600' : 'text-slate-400' }}"></i>
-                            <span>Attendance & Salary</span>
+                            <i class="fa-solid fa-clock-rotate-left w-5 text-center text-base {{ request()->routeIs('admin.attendances.*') ? 'text-brand-600' : 'text-slate-400' }}"></i>
+                            <span>Attendance</span>
                         </div>
                         <i class="fa-solid text-[10px] font-bold text-slate-400" :class="attOpen ? 'fa-minus' : 'fa-plus'"></i>
                     </button>
@@ -255,10 +255,6 @@
                         <a href="{{ route('admin.attendances.monthly') }}" 
                            class="block px-3 py-1.5 rounded-lg text-xs font-medium {{ request()->routeIs('admin.attendances.monthly') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
                             • Monthly Summary Sheet
-                        </a>
-                        <a href="{{ route('admin.salary.index') }}" 
-                           class="block px-3 py-1.5 rounded-lg text-xs font-medium {{ request()->routeIs('admin.salary.*') ? 'text-emerald-700 bg-emerald-50 font-bold border-l-2 border-emerald-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">
-                            • Salary & Payroll Sheet
                         </a>
                         <a href="{{ route('admin.attendances.create') }}" 
                            class="block px-3 py-1.5 rounded-lg text-xs font-medium {{ request()->routeIs('admin.attendances.create') ? 'text-brand-700 bg-brand-50 font-bold border-l-2 border-brand-600 pl-2.5' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70' }}">

@@ -131,11 +131,6 @@
         </form>
 
         <div class="flex items-center gap-2.5">
-            <a href="{{ route('admin.salary.index') }}" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold shadow-xs transition">
-                <i class="fa-solid fa-calculator"></i>
-                <span>Salary Calculation</span>
-            </a>
-
             <a href="{{ route('admin.attendances.monthly') }}" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors">
                 <i class="fa-solid fa-calendar-days text-purple-600"></i>
                 <span>Monthly Sheet</span>
